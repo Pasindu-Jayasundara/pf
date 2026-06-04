@@ -12,13 +12,15 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
   const isMobile = viewport.width < 5;
 
   const curve = useMemo(() => {
-    const scale = isMobile ? 0.6 : 1;
+    const scale = isMobile ? 0.8 : 1.2;
+    // Spread horizontally (X) and move through depth (Z) instead of just down (Y)
     return new CatmullRomCurve3([
-      new Vector3(0, 0, 0),
-      new Vector3(6 * scale, -5, -8),
-      new Vector3(-6 * scale, -12, -15),
-      new Vector3(6 * scale, -20, -22),
-      new Vector3(0, -28, -30),
+      new Vector3(-10 * scale, 2, -5),
+      new Vector3(-5 * scale, 0, -10),
+      new Vector3(8 * scale, -1, -15),
+      new Vector3(-8 * scale, -2, -20),
+      new Vector3(5 * scale, -1, -25),
+      new Vector3(0, 0, -30),
     ]);
   }, [isMobile]);
 
@@ -36,95 +38,99 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
     droneRef.current.lookAt(lookAt);
 
     // Add hover movement
-    droneRef.current.position.y += Math.sin(state.clock.elapsedTime * 2) * 0.1;
+    droneRef.current.position.y += Math.sin(state.clock.elapsedTime * 2) * 0.05;
   });
 
   return (
     <group>
-      {/* The Road/Path - Double line for road effect */}
+      {/* Neon Glowing Path */}
       <Line
-        points={points.map(p => new Vector3(p.x - 0.2, p.y, p.z))}
+        points={points}
         color="#7342E2"
-        lineWidth={3}
+        lineWidth={8}
         transparent
-        opacity={0.3}
+        opacity={0.8}
       />
+      {/* Path Core Glow */}
       <Line
-        points={points.map(p => new Vector3(p.x + 0.2, p.y, p.z))}
-        color="#7342E2"
-        lineWidth={3}
+        points={points}
+        color="#A78BFA"
+        lineWidth={2}
         transparent
-        opacity={0.3}
+        opacity={1}
       />
 
-      {/* Decorative Path Markers (Dashed lines effect) */}
-      {points.filter((_, i) => i % 5 === 0).map((p, i) => (
-         <mesh key={i} position={p} rotation={[Math.PI/2, 0, 0]}>
-            <boxGeometry args={[0.05, 0.2, 0.01]} />
-            <meshBasicMaterial color="#ffffff" transparent opacity={0.2} />
-         </mesh>
-      ))}
+      {/* Pulsing light following the drone */}
+      <pointLight
+        position={curve.getPointAt(scrollProgress)}
+        intensity={5}
+        distance={15}
+        color="#7342E2"
+      />
 
-      {/* The Moving Drone - Inspired by the camera/drone in image */}
+      {/* The Moving Drone */}
       <group ref={droneRef}>
         <Float speed={10} rotationIntensity={2} floatIntensity={1}>
-            {/* Camera body */}
-            <Box args={[0.4, 0.4, 0.6]}>
-                <meshStandardMaterial color="#192837" metalness={0.8} roughness={0.2} />
+            <Box args={[0.5, 0.3, 0.7]}>
+                <meshStandardMaterial color="#111827" metalness={1} roughness={0.1} />
             </Box>
-            {/* Lens */}
-            <Cylinder args={[0.15, 0.15, 0.2, 32]} rotation={[Math.PI/2, 0, 0]} position={[0, 0, 0.35]}>
-                <meshStandardMaterial color="#3b82f6" emissive="#3b82f6" emissiveIntensity={2} />
+            <Cylinder args={[0.15, 0.15, 0.2, 32]} rotation={[Math.PI/2, 0, 0]} position={[0, 0, 0.4]}>
+                <meshStandardMaterial color="#7342E2" emissive="#7342E2" emissiveIntensity={5} />
             </Cylinder>
-            {/* Side wings */}
-            <Box args={[0.8, 0.05, 0.2]} position={[0, 0, 0]}>
-                <meshStandardMaterial color="#7342E2" />
-            </Box>
-
-            <pointLight intensity={2} distance={10} color="#7342E2" />
+            {/* Propellers / Wings */}
+            <mesh position={[0.4, 0, 0]}>
+                <boxGeometry args={[0.4, 0.02, 0.2]} />
+                <meshStandardMaterial color="#4B5563" />
+            </mesh>
+            <mesh position={[-0.4, 0, 0]}>
+                <boxGeometry args={[0.4, 0.02, 0.2]} />
+                <meshStandardMaterial color="#4B5563" />
+            </mesh>
         </Float>
       </group>
 
-      <ProjectMarker position={curve.getPointAt(0.2)} title="CrowdSchield" index={1} progress={scrollProgress} isMobile={isMobile} />
-      <ProjectMarker position={curve.getPointAt(0.45)} title="Rajapura Herbal" index={2} progress={scrollProgress} isMobile={isMobile} />
+      <ProjectMarker position={curve.getPointAt(0.3)} title="CrowdSchield" index={1} progress={scrollProgress} isMobile={isMobile} />
+      <ProjectMarker position={curve.getPointAt(0.5)} title="Rajapura Herbal" index={2} progress={scrollProgress} isMobile={isMobile} />
       <ProjectMarker position={curve.getPointAt(0.7)} title="Vision Expert" index={3} progress={scrollProgress} isMobile={isMobile} />
-      <ProjectMarker position={curve.getPointAt(0.95)} title="Winlow Spices" index={4} progress={scrollProgress} isMobile={isMobile} />
+      <ProjectMarker position={curve.getPointAt(0.9)} title="Winlow Spices" index={4} progress={scrollProgress} isMobile={isMobile} />
     </group>
   );
 };
 
 const ProjectMarker = ({ position, title, index, progress, isMobile }: any) => {
-  const milestoneProgress = [0.2, 0.45, 0.7, 0.95][index - 1];
-  const isActive = Math.abs(progress - milestoneProgress) < 0.05;
+  // Define ranges for each project to stay active
+  const ranges = [
+    [0.2, 0.4], // Project 1 active range
+    [0.4, 0.6], // Project 2 active range
+    [0.6, 0.8], // Project 3 active range
+    [0.8, 1.0], // Project 4 active range
+  ];
+  const [start, end] = ranges[index - 1];
+  const isActive = progress >= start && progress <= end;
 
   return (
     <group position={position}>
-      {/* Node/Stop */}
+      {/* Glowing Node */}
       <mesh scale={isActive ? 1.5 : 1}>
-        <cylinderGeometry args={[0.3, 0.3, 0.05, 32]} />
+        <sphereGeometry args={[0.2, 32, 32]} />
         <meshStandardMaterial
-            color={isActive ? "#7342E2" : "#1e293b"}
+            color={isActive ? "#7342E2" : "#334155"}
             emissive={isActive ? "#7342E2" : "#000000"}
-            emissiveIntensity={2}
+            emissiveIntensity={isActive ? 10 : 0}
         />
       </mesh>
 
       {isActive && (
-        <Float speed={5} rotationIntensity={0} floatIntensity={0.5}>
-            <Icosahedron args={[0.15, 0]} position={[0, 0.5, 0]}>
-                <MeshWobbleMaterial factor={0.6} speed={3} color="#7342E2" emissive="#7342E2" emissiveIntensity={1} />
-            </Icosahedron>
-        </Float>
+        <pointLight intensity={2} distance={5} color="#7342E2" />
       )}
 
       <Text
-        position={[0, isMobile ? 1.2 : 1, 0]}
-        fontSize={isMobile ? 0.35 : 0.5}
-        color={isActive ? "white" : "#64748b"}
+        position={[0, isMobile ? 0.8 : 1, 0]}
+        fontSize={isMobile ? 0.4 : 0.6}
+        color={isActive ? "white" : "#475569"}
         anchorX="center"
         anchorY="middle"
-        outlineWidth={0.02}
-        outlineColor="#000000"
+        font="https://fonts.gstatic.com/s/plusjakartasans/v3/L0x5DF4xlVMF-BfR8bXMIjhLq38.woff"
       >
         {`${index}. ${title}`}
       </Text>

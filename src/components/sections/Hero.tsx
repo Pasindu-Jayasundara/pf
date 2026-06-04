@@ -176,13 +176,13 @@ const Hero = () => {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="font-heading text-[clamp(1.65rem,5vw,3rem)] leading-[1.05] tracking-[-0.01em] mb-6 flex flex-wrap items-center gap-x-3"
+            className="font-heading text-[clamp(2.5rem,8vw,4.5rem)] leading-[0.95] tracking-[-0.03em] mb-8"
           >
-            <Zap size={24} className="inline-block relative top-[-2px]" />
-            Building Modern Digital
-            <Code size={24} className="inline-block relative top-[-2px]" />
-            Experiences with Precision
-            <Cpu size={24} className="inline-block relative top-[-2px]" />
+            <span className="block text-[#7342E2]">Software</span>
+            <span className="flex items-center gap-4">
+              Engineer <Code size={40} className="text-[#192837]/20" />
+            </span>
+            <span className="block opacity-90">& Architect.</span>
           </motion.h1>
 
           <motion.p
@@ -190,9 +190,9 @@ const Hero = () => {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="text-[clamp(0.9rem,2.5vw,1.1rem)] leading-[1.65] opacity-80 mb-10"
+            className="text-[clamp(1rem,2.5vw,1.25rem)] leading-[1.6] opacity-80 mb-12 border-l-2 border-[#7342E2] pl-6 py-2"
           >
-            Zero stress, total control. Pasindu&apos;s digital craftsmanship keeps your projects covered with unbreakable code, one-tap interactivity, and pro-grade engineering for your non-stop world.
+            Hi, I&apos;m <span className="font-bold text-[#192837]">Pasindu Jayasundara</span>. I build high-performance, scalable full-stack applications and immersive 3D experiences. Transforming complex challenges into elegant, production-ready code.
           </motion.p>
 
           <motion.div

@@ -43,7 +43,7 @@ const Projects = () => {
   }, []);
 
   return (
-    <section id="projects" ref={containerRef} className="relative min-h-[400vh] bg-slate-950">
+    <section id="projects" ref={containerRef} className="relative min-h-[500vh] bg-slate-950">
       <div className="sticky top-0 h-screen w-full z-0 overflow-hidden">
         <Canvas camera={{ position: [0, 2, 10], fov: 45 }}>
           <ambientLight intensity={0.5} />
