@@ -1,36 +1,38 @@
 @import "tailwindcss";
 
+@theme {
+  --font-body: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Helvetica Now Display Bold', sans-serif;
+
+  --color-vault-text: #192837;
+  --color-vault-accent: #7342E2;
+  --color-vault-bg: #F2F2EE;
+}
+
 :root {
-  --background: #020617; /* slate-950 */
-  --foreground: #f8fafc; /* slate-50 */
-  --primary: #3b82f6; /* blue-500 */
-  --secondary: #1e293b; /* slate-800 */
-  --accent: #60a5fa; /* blue-400 */
+  --font-heading: 'Helvetica Now Display Bold', sans-serif;
+  --color-text: #192837;
+  --color-accent: #7342E2;
+  --color-login-bg: #F2F2EE;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
-}
-
-@layer base {
-  * {
-    @apply border-slate-800;
-  }
-}
-
-.futuristic-gradient {
-  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+  color: var(--color-text);
+  background-color: white;
 }
 
 .text-glow {
-  text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 }
 
 .glass-morphism {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Custom styles for the 3D sections to keep their dark aesthetic */
+#experience, #projects, #sessions, #blog, #skills {
+    background-color: #020617; /* slate-950 */
+    color: white;
 }

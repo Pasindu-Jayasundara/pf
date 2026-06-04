@@ -1,122 +1,216 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
-import { HeroScene } from "@/components/3d/HeroScene";
-import { PERSONAL_INFO } from "@/constants";
-import gsap from "gsap";
-import { ArrowDown, GitBranch, Link as LinkIcon, Mail } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowRightCircle,
+  Zap,
+  Code,
+  Cpu,
+  Menu,
+  X,
+  Terminal,
+  Download
+} from "lucide-react";
+import Link from "next/link";
+
+const Logo = ({ fill = "#192837" }: { fill?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" overflow="visible" viewBox="0 0 256 256">
+    <path d="M 64 128 L 64.5 128 L 32 95 L 0 64 L 0 0 L 64 0 L 128 64 L 128 64.5 L 161 32 L 192 0 L 256 0 L 256 64 L 192 128 L 128 128 L 128 192 L 96 223 L 63.5 256 L 0 256 L 0 192 Z M 256 192 L 224 223 L 191.5 256 L 128 256 L 128 192 L 192 128 L 256 128 Z" fill={fill}/>
+  </svg>
+);
+
+import { NAV_LINKS } from "@/constants";
 
 const Hero = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline();
-
-      tl.from(titleRef.current, {
-        y: 100,
-        opacity: 0,
-        duration: 1.2,
-        ease: "expo.out",
-      })
-      .from(subtitleRef.current, {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        ease: "expo.out",
-      }, "-=0.9")
-      .from(ctaRef.current, {
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        ease: "expo.out",
-      }, "-=0.9")
-      .from(".social-icon", {
-        scale: 0,
-        opacity: 0,
-        duration: 0.5,
-        stagger: 0.1,
-        ease: "back.out(1.7)",
-      }, "-=0.5");
-
-      gsap.to(".scroll-indicator", {
-        y: 10,
-        repeat: -1,
-        yoyo: true,
-        duration: 1.5,
-        ease: "sine.inOut"
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
+  const fadeUp = {
+    hidden: { opacity: 0, y: 28 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.15,
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    }),
+  };
 
   return (
-    <section
-      id="home"
-      ref={containerRef}
-      className="relative h-screen w-full flex items-center justify-center overflow-hidden"
-    >
+    <section id="home" className="relative w-full min-h-screen font-body text-[#192837] overflow-hidden">
+      {/* Background Video */}
       <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
-          <HeroScene />
-        </Canvas>
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260518_003132_8b7edcb6-c64d-4a52-a9ca-879942e122ad.mp4" type="video/mp4" />
+        </video>
+        {/* Overlay to ensure readability if video is too bright */}
+        <div className="absolute inset-0 bg-white/10" />
       </div>
 
-      <div className="relative z-10 text-center px-6">
-        <div className="mb-6 flex justify-center gap-6">
-            <a href={PERSONAL_INFO.github} target="_blank" className="social-icon p-3 glass-morphism rounded-full hover:bg-blue-600 transition-colors">
-                <GitBranch size={20} />
-            </a>
-            <a href={PERSONAL_INFO.linkedin} target="_blank" className="social-icon p-3 glass-morphism rounded-full hover:bg-blue-600 transition-colors">
-                <LinkIcon size={20} />
-            </a>
-            <a href={`mailto:${PERSONAL_INFO.email}`} className="social-icon p-3 glass-morphism rounded-full hover:bg-blue-600 transition-colors">
-                <Mail size={20} />
-            </a>
+      {/* Navbar */}
+      <nav className="relative z-20 max-w-7xl mx-auto px-5 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+            <Logo />
+            <span className="font-heading text-xl tracking-tight">PASINDU.J</span>
         </div>
 
-        <h1
-          ref={titleRef}
-          className="text-7xl md:text-[10rem] font-black tracking-tighter mb-4 text-glow leading-none select-none"
-        >
-          {PERSONAL_INFO.name.split(" ")[0]}
-          <span className="text-blue-500"> {PERSONAL_INFO.name.split(" ")[1]}</span>
-        </h1>
-        <p
-          ref={subtitleRef}
-          className="text-lg md:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto font-medium uppercase tracking-[0.3em]"
-        >
-          {PERSONAL_INFO.role}
-        </p>
+        <div className="hidden md:flex items-center gap-8">
+          {NAV_LINKS.map((link) => (
+            <Link
+                key={link.name}
+                href={link.href}
+                className="text-sm font-medium opacity-70 hover:opacity-100 transition-opacity"
+            >
+              {link.name}
+            </Link>
+          ))}
+        </div>
 
-        <div ref={ctaRef} className="flex flex-col md:flex-row gap-8 justify-center items-center">
+        <div className="hidden md:flex items-center gap-4">
           <a
-            href="#projects"
-            className="group relative px-12 py-5 bg-blue-600 text-white rounded-full font-bold transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] overflow-hidden"
+            href="https://www.linkedin.com/in/pasindu-jayasundara/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#7342E2] text-white rounded-full px-5 py-2.5 text-sm font-medium hover:brightness-110 transition-all shadow-lg shadow-purple-500/20 flex items-center gap-2"
           >
-            <span className="relative z-10">VIEW MY WORK</span>
-            <div className="absolute inset-0 bg-blue-400 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            Hire Me <ArrowRightCircle size={16} />
           </a>
-          <a
+          <Link
             href="#contact"
-            className="text-white font-bold hover:text-blue-400 transition-all border-b-2 border-transparent hover:border-blue-400 pb-1 tracking-[0.2em] text-sm"
+            className="bg-[#F2F2EE] text-[#192837] rounded-full px-5 py-2.5 text-sm font-medium hover:bg-[#e6e6e2] transition-all"
           >
-            GET IN TOUCH
-          </a>
+            Contact
+          </Link>
+        </div>
+
+        <button
+          className="md:hidden p-2"
+          onClick={() => setIsMenuOpen(true)}
+          aria-label="Toggle menu"
+        >
+          <Menu size={28} />
+        </button>
+      </nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMenuOpen(false)}
+              className="fixed inset-0 z-40 bg-[#192837]/35 backdrop-blur-[4px]"
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.45 }}
+              className="fixed right-0 top-0 z-50 w-[min(88vw,360px)] h-[100dvh] bg-[#CFC8C5] shadow-[-12px_0_48px_rgba(25,40,55,0.18)] p-6 flex flex-col"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <Logo />
+                <button onClick={() => setIsMenuOpen(false)}>
+                  <X size={28} />
+                </button>
+              </div>
+
+              <div className="h-px bg-[#192837]/10 mb-8" />
+
+              <div className="flex flex-col gap-6">
+                {NAV_LINKS.map((link, i) => (
+                  <motion.div
+                    key={link.name}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.18 + i * 0.07 }}
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-2xl font-heading"
+                    >
+                      {link.name}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="mt-auto flex flex-col gap-4">
+                <a
+                  href="https://www.linkedin.com/in/pasindu-jayasundara/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-[#7342E2] text-white rounded-full py-4 font-bold shadow-lg shadow-purple-500/20 text-center"
+                >
+                    Hire Me
+                </a>
+                <Link
+                  href="#contact"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full bg-[#F2F2EE] text-[#192837] rounded-full py-4 font-bold text-center"
+                >
+                    Contact
+                </Link>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Hero Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 flex flex-col justify-center min-h-[calc(100vh-80px)]">
+        <div className="max-w-[560px] pt-[clamp(40px,8vw,72px)]">
+          <motion.h1
+            custom={0}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            className="font-heading text-[clamp(1.65rem,5vw,3rem)] leading-[1.05] tracking-[-0.01em] mb-6 flex flex-wrap items-center gap-x-3"
+          >
+            <Zap size={24} className="inline-block relative top-[-2px]" />
+            Building Modern Digital
+            <Code size={24} className="inline-block relative top-[-2px]" />
+            Experiences with Precision
+            <Cpu size={24} className="inline-block relative top-[-2px]" />
+          </motion.h1>
+
+          <motion.p
+            custom={1}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            className="text-[clamp(0.9rem,2.5vw,1.1rem)] leading-[1.65] opacity-80 mb-10"
+          >
+            Zero stress, total control. Pasindu&apos;s digital craftsmanship keeps your projects covered with unbreakable code, one-tap interactivity, and pro-grade engineering for your non-stop world.
+          </motion.p>
+
+          <motion.div
+            custom={2}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+          >
+            <Link
+              href="#projects"
+              className="inline-flex items-center justify-between gap-8 bg-[#7342E2] text-white rounded-[50px] px-6 py-4.5 font-semibold text-[clamp(0.9rem,2vw,1rem)] shadow-[0_4px_24px_rgba(115,66,226,0.28)] min-w-[210px] hover:scale-[1.04] hover:brightness-110 active:scale-[0.96] transition-all group"
+            >
+              <span>Explore My Work</span>
+              <ArrowRightCircle size={20} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </motion.div>
         </div>
       </div>
-
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 scroll-indicator">
-        <span className="text-[10px] font-bold tracking-[0.3em] text-slate-500">DISCOVER</span>
-        <ArrowDown size={18} className="text-blue-500" />
-      </div>
-
-      <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-slate-950 to-transparent z-0" />
     </section>
   );
 };
