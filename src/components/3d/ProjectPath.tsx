@@ -3,7 +3,7 @@
 import { useRef, useMemo } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { CatmullRomCurve3, Vector3 } from "three";
-import { Text, Float, Line } from "@react-three/drei";
+import { Text, Float, Line, Icosahedron, MeshWobbleMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
 export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
@@ -11,15 +11,14 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
   const { viewport } = useThree();
   const isMobile = viewport.width < 5;
 
-  // Create a 3D path - Adjusted for mobile responsiveness if needed
   const curve = useMemo(() => {
     const scale = isMobile ? 0.6 : 1;
     return new CatmullRomCurve3([
       new Vector3(0, 0, 0),
-      new Vector3(5 * scale, -5, -5),
-      new Vector3(-5 * scale, -10, -10),
-      new Vector3(5 * scale, -15, -15),
-      new Vector3(0, -20, -20),
+      new Vector3(6 * scale, -5, -8),
+      new Vector3(-6 * scale, -12, -15),
+      new Vector3(6 * scale, -20, -22),
+      new Vector3(0, -28, -30),
     ]);
   }, [isMobile]);
 
@@ -36,9 +35,9 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
     const lookAt = curve.getPointAt(Math.min(scrollProgress + 0.01, 1));
     droneRef.current.lookAt(lookAt);
 
-    // Add some dynamic movement
-    droneRef.current.position.y += Math.sin(state.clock.elapsedTime * 2) * 0.1;
-    droneRef.current.position.x += Math.cos(state.clock.elapsedTime) * 0.05;
+    // Add complex rotation and movement
+    droneRef.current.rotation.z += 0.05;
+    droneRef.current.position.y += Math.sin(state.clock.elapsedTime * 2) * 0.15;
   });
 
   return (
@@ -46,44 +45,60 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
       <Line
         points={points}
         color="#3b82f6"
-        lineWidth={1}
+        lineWidth={2}
         transparent
-        opacity={0.2}
+        opacity={0.15}
       />
 
+      {/* The Moving 3D Object - Detailed Icosahedron */}
       <group ref={droneRef}>
-        <Float speed={5} rotationIntensity={2} floatIntensity={2}>
-          <mesh>
-            <sphereGeometry args={[0.3, 32, 32]} />
-            <meshStandardMaterial color="#60a5fa" emissive="#3b82f6" emissiveIntensity={2} />
-          </mesh>
-          <pointLight intensity={2} distance={10} color="#60a5fa" />
+        <Float speed={8} rotationIntensity={3} floatIntensity={2}>
+            <Icosahedron args={[0.5, 0]}>
+                <MeshWobbleMaterial factor={0.6} speed={3} color="#60a5fa" emissive="#3b82f6" emissiveIntensity={2} />
+            </Icosahedron>
+            <pointLight intensity={3} distance={15} color="#3b82f6" />
+            <pointLight position={[1, 1, 1]} intensity={1} color="#ffffff" />
         </Float>
       </group>
 
-      <ProjectMarker position={curve.getPointAt(0.2)} title="CrowdSchield" isMobile={isMobile} />
-      <ProjectMarker position={curve.getPointAt(0.45)} title="Rajapura Herbal" isMobile={isMobile} />
-      <ProjectMarker position={curve.getPointAt(0.7)} title="Vision Expert" isMobile={isMobile} />
-      <ProjectMarker position={curve.getPointAt(0.95)} title="Winlow Spices" isMobile={isMobile} />
+      <ProjectMarker position={curve.getPointAt(0.2)} title="CrowdSchield" index={1} progress={scrollProgress} isMobile={isMobile} />
+      <ProjectMarker position={curve.getPointAt(0.45)} title="Rajapura Herbal" index={2} progress={scrollProgress} isMobile={isMobile} />
+      <ProjectMarker position={curve.getPointAt(0.7)} title="Vision Expert" index={3} progress={scrollProgress} isMobile={isMobile} />
+      <ProjectMarker position={curve.getPointAt(0.95)} title="Winlow Spices" index={4} progress={scrollProgress} isMobile={isMobile} />
     </group>
   );
 };
 
-const ProjectMarker = ({ position, title, isMobile }: { position: Vector3; title: string; isMobile: boolean }) => {
+const ProjectMarker = ({ position, title, index, progress, isMobile }: any) => {
+  const milestoneProgress = [0.2, 0.45, 0.7, 0.95][index - 1];
+  const isActive = Math.abs(progress - milestoneProgress) < 0.05;
+
   return (
     <group position={position}>
-      <mesh>
-        <sphereGeometry args={[0.15, 16, 16]} />
-        <meshStandardMaterial color="#3b82f6" emissive="#3b82f6" emissiveIntensity={0.5} />
+      <mesh scale={isActive ? 1.5 : 1}>
+        <sphereGeometry args={[0.2, 32, 32]} />
+        <meshStandardMaterial
+            color={isActive ? "#3b82f6" : "#1e293b"}
+            emissive={isActive ? "#3b82f6" : "#000000"}
+            emissiveIntensity={2}
+        />
       </mesh>
+
+      {isActive && (
+        <mesh>
+            <ringGeometry args={[0.3, 0.35, 32]} />
+            <meshBasicMaterial color="#3b82f6" transparent opacity={0.5} side={THREE.DoubleSide} />
+        </mesh>
+      )}
+
       <Text
-        position={[0, isMobile ? 0.8 : 0.6, 0]}
-        fontSize={isMobile ? 0.3 : 0.4}
-        color="white"
+        position={[0, isMobile ? 1 : 0.8, 0]}
+        fontSize={isMobile ? 0.35 : 0.5}
+        color={isActive ? "white" : "#64748b"}
         anchorX="center"
         anchorY="middle"
       >
-        {title}
+        {`${index}. ${title}`}
       </Text>
     </group>
   );

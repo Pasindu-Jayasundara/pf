@@ -2,7 +2,8 @@ export const NAV_LINKS = [
   { name: "Home", href: "#home" },
   { name: "Experience", href: "#experience" },
   { name: "Projects", href: "#projects" },
-  { name: "Skills", href: "#skills" },
+  { name: "Sessions", href: "#sessions" },
+  { name: "Blog", href: "#blog" },
   { name: "Contact", href: "#contact" },
 ];
 
@@ -13,6 +14,7 @@ export const PERSONAL_INFO = {
   linkedin: "https://www.linkedin.com/in/pasindu-jayasundara",
   github: "https://github.com/Pasindu-Jayasundara",
   phone: "+94704443997",
+  web3form_key: "50139b4b-9721-42cb-b1b7-4c4054a3233b",
 };
 
 export const EXPERIENCE = [
@@ -74,6 +76,48 @@ export const PROJECTS = [
     duration: "August 2025",
     description: "Native Android e-commerce application with delivery tracking and payment workflows. Backend built with Express.js and migrated to Supabase.",
     tags: ["Android", "Java", "Express.js", "Prisma", "Supabase"]
+  }
+];
+
+export const SESSIONS = [
+  {
+    title: "Azure Cloud Fundamentals",
+    organizer: "Microsoft Student Ambassadors",
+    date: "2024",
+    desc: "A session covering the basics of cloud computing and Azure services for university students."
+  },
+  {
+    title: "Modern Web Development with React",
+    organizer: "AIESEC Sri Lanka",
+    date: "2025",
+    desc: "Workshop on building scalable web applications using the MERN stack and clean code principles."
+  },
+  {
+    title: "Cyber Security Awareness",
+    organizer: "BSides Sri Lanka",
+    date: "2024",
+    desc: "Discussion on identifying common web vulnerabilities and implementing secure authentication."
+  }
+];
+
+export const BLOG_POSTS = [
+  {
+    title: "The Future of AI in Full-Stack Development",
+    date: "May 15, 2024",
+    excerpt: "Exploring how AI Foundry and LLMs are changing the way we build and deploy web applications.",
+    link: "https://bhbg45.blogspot.com/"
+  },
+  {
+    title: "Building Scalable Notification Systems",
+    date: "March 10, 2024",
+    excerpt: "Deep dive into the architecture of the oGX notification system at AIESEC.",
+    link: "https://bhbg45.blogspot.com/"
+  },
+  {
+    title: "Transitioning to Supabase for Mobile Backends",
+    date: "Jan 22, 2024",
+    excerpt: "Why we moved from custom Express servers to Supabase for Winlow Spices version 2.",
+    link: "https://bhbg45.blogspot.com/"
   }
 ];
 
