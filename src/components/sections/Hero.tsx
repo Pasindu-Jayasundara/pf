@@ -4,17 +4,19 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRightCircle,
-  Zap,
   Code,
-  Cpu,
   Menu,
   X,
-  Terminal,
-  Download
+  Github,
+  Linkedin,
+  Mail
 } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 
-const Logo = ({ fill = "#192837" }: { fill?: string }) => (
+const HeroScene = dynamic(() => import("../3d/HeroScene"), { ssr: false });
+
+const Logo = ({ fill = "#FFFFFF" }: { fill?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" overflow="visible" viewBox="0 0 256 256">
     <path d="M 64 128 L 64.5 128 L 32 95 L 0 64 L 0 0 L 64 0 L 128 64 L 128 64.5 L 161 32 L 192 0 L 256 0 L 256 64 L 192 128 L 128 128 L 128 192 L 96 223 L 63.5 256 L 0 256 L 0 192 Z M 256 192 L 224 223 L 191.5 256 L 128 256 L 128 192 L 192 128 L 256 128 Z" fill={fill}/>
   </svg>
@@ -39,27 +41,15 @@ const Hero = () => {
   };
 
   return (
-    <section id="home" className="relative w-full min-h-screen font-body text-[#192837] overflow-hidden">
-      {/* Background Video */}
-      <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover"
-        >
-          <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260518_003132_8b7edcb6-c64d-4a52-a9ca-879942e122ad.mp4" type="video/mp4" />
-        </video>
-        {/* Overlay to ensure readability if video is too bright */}
-        <div className="absolute inset-0 bg-white/10" />
-      </div>
+    <section id="home" className="relative w-full min-h-screen font-body text-white overflow-hidden">
+      {/* 3D Background */}
+      <HeroScene />
 
       {/* Navbar */}
       <nav className="relative z-20 max-w-7xl mx-auto px-5 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
             <Logo />
-            <span className="font-heading text-xl tracking-tight">PASINDU.J</span>
+            <span className="font-heading text-xl tracking-tight text-white">PASINDU.J</span>
         </div>
 
         <div className="hidden md:flex items-center gap-8">
@@ -79,20 +69,20 @@ const Hero = () => {
             href="https://www.linkedin.com/in/pasindu-jayasundara/"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-[#7342E2] text-white rounded-full px-5 py-2.5 text-sm font-medium hover:brightness-110 transition-all shadow-lg shadow-purple-500/20 flex items-center gap-2"
+            className="bg-[#7342E2] text-white rounded-full px-5 py-2.5 text-sm font-medium hover:brightness-110 transition-all shadow-lg shadow-purple-500/40 flex items-center gap-2 border border-white/10"
           >
             Hire Me <ArrowRightCircle size={16} />
           </a>
           <Link
             href="#contact"
-            className="bg-[#F2F2EE] text-[#192837] rounded-full px-5 py-2.5 text-sm font-medium hover:bg-[#e6e6e2] transition-all"
+            className="bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-full px-5 py-2.5 text-sm font-medium hover:bg-white/20 transition-all"
           >
             Contact
           </Link>
         </div>
 
         <button
-          className="md:hidden p-2"
+          className="md:hidden p-2 text-white"
           onClick={() => setIsMenuOpen(true)}
           aria-label="Toggle menu"
         >
@@ -116,16 +106,16 @@ const Hero = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.45 }}
-              className="fixed right-0 top-0 z-50 w-[min(88vw,360px)] h-[100dvh] bg-[#CFC8C5] shadow-[-12px_0_48px_rgba(25,40,55,0.18)] p-6 flex flex-col"
+              className="fixed right-0 top-0 z-50 w-[min(88vw,360px)] h-[100dvh] bg-[#0A0C16] shadow-[-12px_0_48px_rgba(0,0,0,0.5)] p-6 flex flex-col border-l border-white/10"
             >
               <div className="flex items-center justify-between mb-8">
-                <Logo />
-                <button onClick={() => setIsMenuOpen(false)}>
+                <Logo fill="#FFFFFF" />
+                <button onClick={() => setIsMenuOpen(false)} className="text-white">
                   <X size={28} />
                 </button>
               </div>
 
-              <div className="h-px bg-[#192837]/10 mb-8" />
+              <div className="h-px bg-white/10 mb-8" />
 
               <div className="flex flex-col gap-6">
                 {NAV_LINKS.map((link, i) => (
@@ -138,7 +128,7 @@ const Hero = () => {
                     <Link
                       href={link.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="text-2xl font-heading"
+                      className="text-2xl font-heading text-white hover:text-[#7342E2] transition-colors"
                     >
                       {link.name}
                     </Link>
@@ -158,7 +148,7 @@ const Hero = () => {
                 <Link
                   href="#contact"
                   onClick={() => setIsMenuOpen(false)}
-                  className="w-full bg-[#F2F2EE] text-[#192837] rounded-full py-4 font-bold text-center"
+                  className="w-full bg-white/10 text-white rounded-full py-4 font-bold text-center border border-white/20"
                 >
                     Contact
                 </Link>
@@ -170,7 +160,17 @@ const Hero = () => {
 
       {/* Hero Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 flex flex-col justify-center min-h-[calc(100vh-80px)]">
-        <div className="max-w-[560px] pt-[clamp(40px,8vw,72px)]">
+        <div className="max-w-[700px] pt-[clamp(40px,8vw,72px)]">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-xs font-medium tracking-wider text-[#00F2FE] mb-6 uppercase"
+          >
+            <div className="w-2 h-2 rounded-full bg-[#00F2FE] animate-pulse" />
+            Available for new opportunities
+          </motion.div>
+
           <motion.h1
             custom={0}
             initial="hidden"
@@ -178,11 +178,11 @@ const Hero = () => {
             variants={fadeUp}
             className="font-heading text-[clamp(2.5rem,8vw,4.5rem)] leading-[0.95] tracking-[-0.03em] mb-8"
           >
-            <span className="block text-[#7342E2]">Software</span>
-            <span className="flex items-center gap-4">
-              Engineer <Code size={40} className="text-[#192837]/20" />
+            <span className="block text-white">Full-Stack</span>
+            <span className="flex items-center gap-4 text-[#7342E2]">
+              Architect <Code size={40} className="text-white/20" />
             </span>
-            <span className="block opacity-90">& Architect.</span>
+            <span className="block opacity-90">& Developer.</span>
           </motion.h1>
 
           <motion.p
@@ -190,9 +190,9 @@ const Hero = () => {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="text-[clamp(1rem,2.5vw,1.25rem)] leading-[1.6] opacity-80 mb-12 border-l-2 border-[#7342E2] pl-6 py-2"
+            className="text-[clamp(1rem,2.5vw,1.25rem)] leading-[1.6] text-white/70 mb-12 border-l-2 border-[#7342E2] pl-6 py-2 max-w-xl"
           >
-            Hi, I&apos;m <span className="font-bold text-[#192837]">Pasindu Jayasundara</span>. I build high-performance, scalable full-stack applications and immersive 3D experiences. Transforming complex challenges into elegant, production-ready code.
+            Hi, I&apos;m <span className="font-bold text-white">Pasindu Jayasundara</span>. I craft scalable digital ecosystems and immersive 3D interfaces. Bridging the gap between robust backend architecture and fluid frontend experiences.
           </motion.p>
 
           <motion.div
@@ -200,14 +200,33 @@ const Hero = () => {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
+            className="flex flex-wrap items-center gap-6"
           >
             <Link
               href="#projects"
-              className="inline-flex items-center justify-between gap-8 bg-[#7342E2] text-white rounded-[50px] px-6 py-4.5 font-semibold text-[clamp(0.9rem,2vw,1rem)] shadow-[0_4px_24px_rgba(115,66,226,0.28)] min-w-[210px] hover:scale-[1.04] hover:brightness-110 active:scale-[0.96] transition-all group"
+              className="inline-flex items-center justify-between gap-8 bg-[#7342E2] text-white rounded-full px-8 py-5 font-semibold text-[clamp(0.9rem,2vw,1rem)] shadow-[0_4px_24px_rgba(115,66,226,0.4)] hover:scale-[1.04] hover:brightness-110 active:scale-[0.96] transition-all group"
             >
-              <span>Explore My Work</span>
+              <span>View Portfolio</span>
               <ArrowRightCircle size={20} className="group-hover:translate-x-1 transition-transform" />
             </Link>
+
+            <div className="flex items-center gap-4">
+              {[
+                { icon: Github, href: "https://github.com/Pasindu-Jayasundara" },
+                { icon: Linkedin, href: "https://www.linkedin.com/in/pasindu-jayasundara/" },
+                { icon: Mail, href: "mailto:pasindu.jayasundara@example.com" }
+              ].map((social, i) => (
+                <a
+                  key={i}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-full bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                >
+                  <social.icon size={20} />
+                </a>
+              ))}
+            </div>
           </motion.div>
         </div>
       </div>
