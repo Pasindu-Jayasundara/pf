@@ -61,7 +61,7 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
       {/* The Road */}
       <mesh geometry={roadGeometry}>
         <meshStandardMaterial
-            color="#111827"
+            color="#1e293b"
             metalness={0.8}
             roughness={0.2}
             wireframe={false}
@@ -74,16 +74,16 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
       <Line
         points={curve.getPoints(100)}
         color="#7342E2"
-        lineWidth={3}
+        lineWidth={5}
         transparent
-        opacity={0.5}
+        opacity={0.8}
       />
 
       {/* Atmospheric lighting following the drone */}
       <pointLight
         position={curve.getPointAt(scrollProgress)}
-        intensity={10}
-        distance={20}
+        intensity={30}
+        distance={30}
         color="#00F2FE"
       />
 
