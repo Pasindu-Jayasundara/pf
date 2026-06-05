@@ -48,7 +48,7 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
     // 2. Camera Following Logic - FIXED WORLD SPACE OFFSET
     // We want the camera to always be above and behind the human in world space
     // to avoid clipping through the tube as it curves.
-    const targetCameraPos = pos.clone().add(new Vector3(0, 12, 20));
+    const targetCameraPos = pos.clone().add(new Vector3(0, 4, 7));
     state.camera.position.lerp(targetCameraPos, 0.1);
 
     // Look ahead at the human and slightly beyond
@@ -107,7 +107,7 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
         const tangent = curve.getTangentAt(t);
 
         // Offset panel to the side of the road - BRING CLOSER
-        const sideOffset = new Vector3(4, 3, 0);
+        const sideOffset = new Vector3(2.2, 1.5, 0);
         const matrix = new Matrix4().lookAt(new Vector3(0, 0, 0), tangent, new Vector3(0, 1, 0));
         const quat = new Quaternion().setFromRotationMatrix(matrix);
         sideOffset.applyQuaternion(quat);
@@ -197,7 +197,7 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
     <group ref={groupRef} position={position}>
         <Float speed={3} rotationIntensity={0.2} floatIntensity={0.5}>
             <Text
-                fontSize={6}
+                fontSize={2}
                 color="#FFFFFF"
                 anchorX="center"
                 anchorY="middle"
@@ -213,7 +213,7 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
             </Text>
             {/* Background glow plate */}
             <mesh position={[0, 0, -0.8]}>
-              <planeGeometry args={[60, 20]} />
+              <planeGeometry args={[20, 6]} />
               <meshBasicMaterial color="#7342E2" transparent opacity={0.5} />
             </mesh>
         </Float>
@@ -260,14 +260,14 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
 
         <Html
           transform
-          distanceFactor={3.5}
+          distanceFactor={2}
           position={[0, 0, 0.12]}
           className="pointer-events-none select-none"
         >
-          <div className={`w-[500px] p-8 rounded-2xl transition-all duration-500 ${isActive ? 'opacity-100 scale-100' : 'opacity-40 scale-95 grayscale'}`}>
-            <h3 className="text-4xl font-bold text-white mb-3 leading-tight">{project.title}</h3>
+          <div className={`w-[600px] p-10 rounded-2xl transition-all duration-500 ${isActive ? 'opacity-100 scale-100' : 'opacity-40 scale-95 grayscale'}`}>
+            <h3 className="text-5xl font-bold text-white mb-4 leading-tight">{project.title}</h3>
             <p className="text-blue-400 font-mono text-sm mb-4">{project.duration}</p>
-            <p className="text-white/70 text-base leading-relaxed mb-6 line-clamp-3">
+            <p className="text-white/80 text-xl leading-relaxed mb-8 line-clamp-4">
               {project.description}
             </p>
             <div className="flex flex-wrap gap-2">
@@ -283,7 +283,7 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
 
       {/* Decorative Connector to Road */}
       <Line
-        points={[new Vector3(0, 0, 0), new Vector3(-4, -2, 0)]}
+        points={[new Vector3(0, 0, 0), new Vector3(-2.2, -1.5, 0)]}
         color={isActive ? "#00F2FE" : "#334155"}
         lineWidth={1}
         transparent
