@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ProjectPath } from "@/components/3d/ProjectPath";
 import { PROJECTS } from "@/constants";
@@ -45,11 +45,17 @@ const Projects = () => {
   return (
     <section id="projects" ref={containerRef} className="relative min-h-[600vh] bg-[#050816]">
       <div className="sticky top-0 h-screen w-full z-0 overflow-hidden">
-        <Canvas camera={{ position: [0, 5, 10], fov: 50 }}>
+        <Canvas
+          camera={{ position: [0, 5, 10], fov: 50 }}
+          resize={{ scroll: false }}
+          style={{ width: '100%', height: '100%' }}
+        >
           <fog attach="fog" args={["#050816", 5, 40]} />
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
-          <ProjectPath scrollProgress={scrollProgress} />
+          <Suspense fallback={null}>
+            <ProjectPath scrollProgress={scrollProgress} />
+          </Suspense>
         </Canvas>
       </div>
 

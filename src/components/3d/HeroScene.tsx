@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Float,
-  PerspectiveCamera,
   Text,
   MeshDistortMaterial,
   Sphere,
@@ -147,10 +146,14 @@ const CodingParticles = () => {
 
 export default function HeroScene() {
   return (
-    <div className="absolute inset-0 z-0 bg-[#050816]">
-      <Canvas shadows dpr={[1, 2]}>
-        <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={50} />
-
+    <div className="absolute inset-0 z-0 bg-[#050816]" style={{ height: '100%', width: '100%' }}>
+      <Canvas
+        shadows
+        dpr={[1, 2]}
+        resize={{ scroll: false }}
+        camera={{ position: [0, 0, 8], fov: 50 }}
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+      >
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} color="#7342E2" />
         <pointLight position={[-10, -10, -10]} intensity={0.5} color="#00F2FE" />
@@ -162,30 +165,32 @@ export default function HeroScene() {
           castShadow
         />
 
-        <PresentationControls
-          global
-          snap
-          speed={2}
-          damping={0.1}
-          rotation={[0, 0.3, 0]}
-          polar={[-Math.PI / 4, Math.PI / 4]}
-          azimuth={[-Math.PI / 4, Math.PI / 4]}
-        >
-          <InteractiveCore />
-        </PresentationControls>
+        <Suspense fallback={null}>
+          <PresentationControls
+            global
+            snap
+            speed={2}
+            damping={0.1}
+            rotation={[0, 0.3, 0]}
+            polar={[-Math.PI / 4, Math.PI / 4]}
+            azimuth={[-Math.PI / 4, Math.PI / 4]}
+          >
+            <InteractiveCore />
+          </PresentationControls>
 
-        <FloatingObjects />
-        <CodingParticles />
+          <FloatingObjects />
+          <CodingParticles />
 
-        <ContactShadows
-          position={[0, -4, 0]}
-          opacity={0.4}
-          scale={20}
-          blur={2}
-          far={4.5}
-        />
+          <ContactShadows
+            position={[0, -4, 0]}
+            opacity={0.4}
+            scale={20}
+            blur={2}
+            far={4.5}
+          />
 
-        <Environment preset="city" />
+          <Environment preset="city" />
+        </Suspense>
       </Canvas>
 
       {/* Gradient overlay for better text readability */}
