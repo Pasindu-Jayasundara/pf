@@ -69,11 +69,7 @@ const Projects = () => {
         </div>
 
         {/* Spacing for scroll depth */}
-        <div className="h-[400vh]" />
-
-        <div className="h-screen flex items-center justify-center">
-            <p className="text-white/20 font-mono italic text-lg">And the journey continues...</p>
-        </div>
+        <div className="h-[500vh]" />
       </div>
     </section>
   );

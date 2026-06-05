@@ -46,8 +46,8 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
     droneRef.current.lookAt(lookAtPos);
 
     // 2. Camera Following Logic
-    // Offset camera behind and slightly above the human
-    const offset = new Vector3(0, 4, 10);
+    // Adjust camera to be "on top" of the road, looking slightly down and ahead
+    const offset = new Vector3(0, 5, 10); // Higher and further back for better perspective "on top"
     // Rotate offset to match path direction
     const matrix = new Matrix4().lookAt(pos, lookAtPos, new Vector3(0, 1, 0));
     const quat = new Quaternion().setFromRotationMatrix(matrix);
@@ -55,7 +55,15 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
 
     const targetCameraPos = pos.clone().add(offset);
     state.camera.position.lerp(targetCameraPos, 0.1);
-    state.camera.lookAt(pos.clone().add(tangent.multiplyScalar(5)));
+
+    // Look ahead at the human and slightly beyond
+    if (progress > 0.92) {
+        // At the end, focus on the final milestone
+        const milestonePos = curve.getPointAt(1).add(new Vector3(0, 3, 0));
+        state.camera.lookAt(milestonePos);
+    } else {
+        state.camera.lookAt(pos.clone().add(new Vector3(0, 1, 0)).add(tangent.multiplyScalar(3)));
+    }
   });
 
   return (
@@ -119,6 +127,9 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
           />
         );
       })}
+
+      {/* The Journey Continues - Final Milestone */}
+      <FinalMilestone position={curve.getPointAt(1).add(new Vector3(0, 3, 0))} />
     </group>
   );
 };
@@ -173,6 +184,44 @@ const HumanModel = () => {
         <boxGeometry args={[0.1, 0.5, 0.1]} />
         <meshStandardMaterial color="#7342E2" />
       </mesh>
+    </group>
+  );
+};
+
+const FinalMilestone = ({ position }: { position: Vector3 }) => {
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (groupRef.current) {
+        groupRef.current.lookAt(state.camera.position);
+    }
+  });
+
+  return (
+    <group ref={groupRef} position={position}>
+        <Float speed={3} rotationIntensity={0.2} floatIntensity={0.5}>
+            <Text
+                fontSize={6}
+                color="#FFFFFF"
+                anchorX="center"
+                anchorY="middle"
+                maxWidth={40}
+            >
+                THE JOURNEY CONTINUES...
+                <meshStandardMaterial
+                  color="#FFFFFF"
+                  emissive="#FFFFFF"
+                  emissiveIntensity={2}
+                  toneMapped={false}
+                />
+            </Text>
+            {/* Background glow plate */}
+            <mesh position={[0, 0, -0.8]}>
+              <planeGeometry args={[60, 20]} />
+              <meshBasicMaterial color="#7342E2" transparent opacity={0.5} />
+            </mesh>
+        </Float>
+        <pointLight intensity={200} distance={100} color="#7342E2" />
     </group>
   );
 };
