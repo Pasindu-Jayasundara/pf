@@ -65,10 +65,10 @@ const Experience = () => {
             {EXPERIENCE.map((exp, index) => (
               <div
                 key={index}
-                className="timeline-item relative flex items-center justify-between"
+                className={`timeline-item relative flex items-center justify-between ${index % 2 !== 0 ? "flex-row-reverse" : ""}`}
                 data-side={index % 2 === 0 ? "left" : "right"}
               >
-                <div className={`w-[45%] ${index % 2 === 0 ? "text-right pr-8" : "order-1 pl-8"}`}>
+                <div className={`w-[45%] ${index % 2 === 0 ? "text-right pr-8" : "pl-8 text-left"}`}>
                   <h3 className="text-2xl font-bold text-blue-400">{exp.role}</h3>
                   <p className="text-lg text-slate-200 font-medium">{exp.company}</p>
                   <p className="text-sm text-slate-400 mb-4">{exp.duration}</p>
@@ -92,10 +92,10 @@ const Experience = () => {
                 return (
                   <div
                     key={index}
-                    className="timeline-item relative flex items-center justify-between"
+                    className={`timeline-item relative flex items-center justify-between ${totalIndex % 2 !== 0 ? "flex-row-reverse" : ""}`}
                     data-side={totalIndex % 2 === 0 ? "left" : "right"}
                   >
-                    <div className={`w-[45%] ${totalIndex % 2 === 0 ? "text-right pr-8" : "order-1 pl-8 text-left"}`}>
+                    <div className={`w-[45%] ${totalIndex % 2 === 0 ? "text-right pr-8" : "pl-8 text-left"}`}>
                       <h3 className="text-2xl font-bold text-blue-400">{edu.role}</h3>
                       <p className="text-lg text-slate-200 font-medium">{edu.company}</p>
                       <p className="text-sm text-slate-400">{edu.duration}</p>

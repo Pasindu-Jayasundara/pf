@@ -22,7 +22,7 @@ const Logo = ({ fill = "#FFFFFF" }: { fill?: string }) => (
   </svg>
 );
 
-import { NAV_LINKS } from "@/constants";
+import { NAV_LINKS, PERSONAL_INFO } from "@/constants";
 
 const Hero = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -212,9 +212,9 @@ const Hero = () => {
 
             <div className="flex items-center gap-4">
               {[
-                { icon: Github, href: "https://github.com/Pasindu-Jayasundara" },
-                { icon: Linkedin, href: "https://www.linkedin.com/in/pasindu-jayasundara/" },
-                { icon: Mail, href: "mailto:pasindu.jayasundara@example.com" }
+                { icon: Github, href: PERSONAL_INFO.github },
+                { icon: Linkedin, href: PERSONAL_INFO.linkedin },
+                { icon: Mail, href: `mailto:${PERSONAL_INFO.email}` }
               ].map((social, i) => (
                 <a
                   key={i}

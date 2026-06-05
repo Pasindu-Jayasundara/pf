@@ -63,27 +63,27 @@ const FloatingObjects = () => {
 };
 
 const InteractiveCore = () => {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
   const { mouse, viewport } = useThree();
 
   useFrame((state) => {
-    if (!meshRef.current) return;
+    if (!groupRef.current) return;
 
     // Follow mouse with some easing
     const x = (mouse.x * viewport.width) / 2;
     const y = (mouse.y * viewport.height) / 2;
 
-    meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, x * 0.5, 0.1);
-    meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, y * 0.5, 0.1);
+    groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, x * 0.5 + 2, 0.1);
+    groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, y * 0.5, 0.1);
 
-    meshRef.current.rotation.x = state.clock.getElapsedTime() * 0.2;
-    meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.3;
+    groupRef.current.rotation.x = state.clock.getElapsedTime() * 0.2;
+    groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.3;
   });
 
   return (
-    <group position={[2, 0, 0]}>
+    <group ref={groupRef}>
       <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-        <mesh ref={meshRef}>
+        <mesh>
           <icosahedronGeometry args={[2, 2]} />
           <MeshDistortMaterial
             color="#7342E2"
@@ -97,7 +97,7 @@ const InteractiveCore = () => {
       </Float>
 
       {/* Wireframe overlay */}
-      <mesh ref={meshRef as any} scale={1.1}>
+      <mesh scale={1.1}>
         <icosahedronGeometry args={[2, 2]} />
         <meshStandardMaterial
           wireframe

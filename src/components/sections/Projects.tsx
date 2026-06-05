@@ -43,47 +43,31 @@ const Projects = () => {
   }, []);
 
   return (
-    <section id="projects" ref={containerRef} className="relative min-h-[500vh] bg-slate-950">
+    <section id="projects" ref={containerRef} className="relative min-h-[600vh] bg-[#050816]">
       <div className="sticky top-0 h-screen w-full z-0 overflow-hidden">
-        <Canvas camera={{ position: [0, 2, 10], fov: 45 }}>
+        <Canvas camera={{ position: [0, 5, 10], fov: 50 }}>
+          <fog attach="fog" args={["#050816", 5, 40]} />
           <ambientLight intensity={0.5} />
+          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
           <ProjectPath scrollProgress={scrollProgress} />
         </Canvas>
       </div>
 
-      <div className="relative z-10 -mt-[100vh]">
-        <div className="h-screen flex items-center justify-center pointer-events-none">
-          <h2 className="text-6xl font-extrabold text-glow">Featured Projects</h2>
+      <div className="relative z-10 pointer-events-none">
+        <div className="h-screen flex flex-col items-center justify-center text-center px-4">
+          <h2 className="text-5xl md:text-7xl font-heading text-white mb-4">The Project Journey</h2>
+          <p className="text-white/50 font-mono tracking-widest uppercase text-sm">Scroll to travel through my milestones</p>
+          <div className="mt-12 animate-bounce opacity-20">
+            <div className="w-px h-24 bg-gradient-to-b from-transparent via-white to-transparent" />
+          </div>
         </div>
 
-        {PROJECTS.map((project, index) => (
-          <div key={index} className="h-screen flex items-center justify-center px-6">
-            <div className="project-card glass-morphism p-8 md:p-12 rounded-3xl max-w-2xl w-full">
-              <span className="text-blue-500 font-mono text-sm mb-2 block">{project.duration}</span>
-              <h3 className="text-3xl md:text-4xl font-bold mb-4">{project.title}</h3>
-              <p className="text-slate-300 text-lg mb-6 leading-relaxed">
-                {project.description}
-              </p>
+        {/* Spacing for scroll depth */}
+        <div className="h-[400vh]" />
 
-              <div className="flex flex-wrap gap-2 mb-8">
-                {project.tags.map(tag => (
-                  <span key={tag} className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-xs text-blue-400">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex gap-4">
-                <button className="flex items-center gap-2 text-sm font-bold text-white bg-blue-600 px-6 py-3 rounded-full hover:bg-blue-700 transition-all">
-                  Details <ExternalLink size={16} />
-                </button>
-                <button className="flex items-center gap-2 text-sm font-bold text-slate-300 border border-slate-700 px-6 py-3 rounded-full hover:border-slate-500 transition-all">
-                  Source <GitBranch size={16} />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+        <div className="h-screen flex items-center justify-center">
+            <p className="text-white/20 font-mono italic text-lg">And the journey continues...</p>
+        </div>
       </div>
     </section>
   );
