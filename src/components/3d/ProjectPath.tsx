@@ -106,8 +106,8 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
         const position = curve.getPointAt(t);
         const tangent = curve.getTangentAt(t);
 
-        // Offset panel to the side of the road
-        const sideOffset = new Vector3(6, 2, 0);
+        // Offset panel to the side of the road - BRING CLOSER
+        const sideOffset = new Vector3(4, 3, 0);
         const matrix = new Matrix4().lookAt(new Vector3(0, 0, 0), tangent, new Vector3(0, 1, 0));
         const quat = new Quaternion().setFromRotationMatrix(matrix);
         sideOffset.applyQuaternion(quat);
@@ -235,9 +235,9 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
 
   return (
     <group ref={groupRef} position={position}>
-      {/* Floating 3D Panel */}
+      {/* Floating 3D Panel - BIGGER */}
       <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
-        <Box args={[5, 3.5, 0.1]} scale={isActive ? 1.1 : 1}>
+        <Box args={[7, 4.5, 0.1]} scale={isActive ? 1.2 : 1}>
           <meshStandardMaterial
             color="#0A0C16"
             transparent
@@ -247,8 +247,8 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
           />
         </Box>
 
-        <mesh position={[0, 0, 0.06]} scale={isActive ? 1.05 : 1}>
-            <planeGeometry args={[4.8, 3.3]} />
+        <mesh position={[0, 0, 0.06]} scale={isActive ? 1.1 : 1}>
+            <planeGeometry args={[6.8, 4.3]} />
             <meshStandardMaterial
                 color={isActive ? "#7342E2" : "#1e293b"}
                 transparent
@@ -260,12 +260,12 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
 
         <Html
           transform
-          distanceFactor={4}
-          position={[0, 0, 0.1]}
+          distanceFactor={3.5}
+          position={[0, 0, 0.12]}
           className="pointer-events-none select-none"
         >
-          <div className={`w-[400px] p-6 rounded-xl transition-all duration-500 ${isActive ? 'opacity-100 scale-100' : 'opacity-40 scale-95 grayscale'}`}>
-            <h3 className="text-3xl font-bold text-white mb-2 leading-tight">{project.title}</h3>
+          <div className={`w-[500px] p-8 rounded-2xl transition-all duration-500 ${isActive ? 'opacity-100 scale-100' : 'opacity-40 scale-95 grayscale'}`}>
+            <h3 className="text-4xl font-bold text-white mb-3 leading-tight">{project.title}</h3>
             <p className="text-blue-400 font-mono text-sm mb-4">{project.duration}</p>
             <p className="text-white/70 text-base leading-relaxed mb-6 line-clamp-3">
               {project.description}
