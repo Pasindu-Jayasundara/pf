@@ -38,22 +38,17 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
     const tangent = curve.getTangentAt(progress);
 
     // Offset human ABOVE the path so it's not overlapped
-    const upOffset = new Vector3(0, 0.8, 0);
+    const upOffset = new Vector3(0, 2.5, 0);
     droneRef.current.position.copy(pos).add(upOffset);
 
     // Look ahead on the path
     const lookAtPos = curve.getPointAt(Math.min(progress + 0.01, 1)).add(upOffset);
     droneRef.current.lookAt(lookAtPos);
 
-    // 2. Camera Following Logic
-    // Adjust camera to be "on top" of the road, looking slightly down and ahead
-    const offset = new Vector3(0, 5, 10); // Higher and further back for better perspective "on top"
-    // Rotate offset to match path direction
-    const matrix = new Matrix4().lookAt(pos, lookAtPos, new Vector3(0, 1, 0));
-    const quat = new Quaternion().setFromRotationMatrix(matrix);
-    offset.applyQuaternion(quat);
-
-    const targetCameraPos = pos.clone().add(offset);
+    // 2. Camera Following Logic - FIXED WORLD SPACE OFFSET
+    // We want the camera to always be above and behind the human in world space
+    // to avoid clipping through the tube as it curves.
+    const targetCameraPos = pos.clone().add(new Vector3(0, 12, 20));
     state.camera.position.lerp(targetCameraPos, 0.1);
 
     // Look ahead at the human and slightly beyond
@@ -62,7 +57,8 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
         const milestonePos = curve.getPointAt(1).add(new Vector3(0, 3, 0));
         state.camera.lookAt(milestonePos);
     } else {
-        state.camera.lookAt(pos.clone().add(new Vector3(0, 1, 0)).add(tangent.multiplyScalar(3)));
+        // Look at the human's feet/road position but slightly ahead
+        state.camera.lookAt(pos.clone().add(new Vector3(0, 2, 0)));
     }
   });
 
