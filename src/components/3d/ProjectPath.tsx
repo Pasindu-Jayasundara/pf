@@ -61,7 +61,9 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
       {/* The Road */}
       <mesh geometry={roadGeometry}>
         <meshStandardMaterial
-            color="#1e293b"
+            color="#2563eb"
+            emissive="#1d4ed8"
+            emissiveIntensity={0.5}
             metalness={0.8}
             roughness={0.2}
             wireframe={false}
