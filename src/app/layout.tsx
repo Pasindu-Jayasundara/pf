@@ -18,13 +18,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href="https://db.onlinewebfonts.com/c/04e6981992c0e2e7642af2074ebe3901?family=Helvetica+Now+Display+Bold" />
       </head>
-      <body className={`${inter.variable} antialiased font-body`}>
+      <body className={`${inter.variable} antialiased font-body`} suppressHydrationWarning>
         <main>{children}</main>
-        <footer className="py-12 border-t border-slate-800 text-center text-slate-400 text-sm bg-[#F2F2EE]">
+        <footer className="py-12 border-t border-slate-800 text-center text-slate-400 text-sm bg-[#0A0C16]">
           <p>© {new Date().getFullYear()} Pasindu Jayasundara. All rights reserved.</p>
         </footer>
       </body>
