@@ -24,6 +24,18 @@ const Projects = () => {
       },
     });
 
+    // Fade out intro title quickly
+    gsap.to(".projects-intro", {
+      opacity: 0,
+      y: -200,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "top -50%", // Fully gone after scrolling half a screen
+        scrub: true,
+      }
+    });
+
     gsap.utils.toArray(".project-card").forEach((card: any, i) => {
       gsap.fromTo(card,
         { opacity: 0, y: 100, scale: 0.9 },
@@ -60,7 +72,7 @@ const Projects = () => {
       </div>
 
       <div className="relative z-10 pointer-events-none">
-        <div className="h-screen flex flex-col items-center justify-center text-center px-4">
+        <div className="h-screen flex flex-col items-center justify-center text-center px-4 projects-intro">
           <h2 className="text-5xl md:text-7xl font-heading text-white mb-4">The Project Journey</h2>
           <p className="text-white/50 font-mono tracking-widest uppercase text-sm">Scroll to travel through my milestones</p>
           <div className="mt-12 animate-bounce opacity-20">

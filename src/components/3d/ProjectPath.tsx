@@ -38,7 +38,8 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
     const tangent = curve.getTangentAt(progress);
 
     // Offset human ABOVE the path so it's not overlapped
-    const upOffset = new Vector3(0, 2.5, 0);
+    // Road radius is 1.5. Human model's feet are slightly below origin, so 1.7 feels solid.
+    const upOffset = new Vector3(0, 1.7, 0);
     droneRef.current.position.copy(pos).add(upOffset);
 
     // Look ahead on the path
@@ -48,7 +49,7 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
     // 2. Camera Following Logic - FIXED WORLD SPACE OFFSET
     // We want the camera to always be above and behind the human in world space
     // to avoid clipping through the tube as it curves.
-    const targetCameraPos = pos.clone().add(new Vector3(0, 4, 7));
+    const targetCameraPos = pos.clone().add(new Vector3(0, 6, 12));
     state.camera.position.lerp(targetCameraPos, 0.1);
 
     // Look ahead at the human and slightly beyond
@@ -119,7 +120,8 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
             key={i}
             position={panelPos}
             project={project}
-            isActive={Math.abs(scrollProgress - t) < 0.15}
+            isActive={Math.abs(scrollProgress - t) < 0.08}
+            isNear={Math.abs(scrollProgress - t) < 0.15}
           />
         );
       })}
@@ -225,7 +227,7 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
   );
 };
 
-const ProjectPanel = ({ position, project, isActive }: any) => {
+const ProjectPanel = ({ position, project, isActive, isNear }: any) => {
   const groupRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
 
@@ -240,7 +242,7 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
   });
 
   return (
-    <group ref={groupRef} position={position}>
+    <group ref={groupRef} position={position} visible={isNear}>
       {/* Floating 3D Panel - BIGGER */}
       {/* Set rotationIntensity to 0 to prevent tilting */}
       <Float speed={2} rotationIntensity={0} floatIntensity={0.5}>
@@ -248,7 +250,7 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
           <meshStandardMaterial
             color="#0A0C16"
             transparent
-            opacity={0.9}
+            opacity={isActive ? 0.9 : 0.4}
             metalness={0.9}
             roughness={0.1}
           />
@@ -259,7 +261,7 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
             <meshStandardMaterial
                 color={isActive ? "#7342E2" : "#1e293b"}
                 transparent
-                opacity={0.3}
+                opacity={isActive ? 0.3 : 0.1}
                 emissive={isActive ? "#7342E2" : "#000"}
                 emissiveIntensity={0.8}
             />
@@ -271,7 +273,7 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
           position={[0, 0, 0.12]}
           className="pointer-events-none select-none"
         >
-          <div className={`w-[600px] p-10 rounded-2xl transition-all duration-500 ${isActive ? 'opacity-100 scale-110' : 'opacity-40 scale-90 grayscale'}`}>
+          <div className={`w-[600px] p-10 rounded-2xl transition-all duration-500 ${isActive ? 'opacity-100 scale-110' : 'opacity-0 scale-75'}`}>
             <h3 className="text-6xl font-bold text-white mb-6 leading-tight">{project.title}</h3>
             <p className="text-blue-400 font-mono text-lg mb-4">{project.duration}</p>
             <p className="text-white/90 text-2xl leading-relaxed mb-10 line-clamp-4">
