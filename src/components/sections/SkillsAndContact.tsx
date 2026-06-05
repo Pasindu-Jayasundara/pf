@@ -93,6 +93,7 @@ const SkillsAndContact = () => {
                             name="name"
                             required
                             placeholder="John Doe"
+                            suppressHydrationWarning
                             className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-blue-500 transition-colors text-white"
                         />
                     </div>
@@ -103,6 +104,7 @@ const SkillsAndContact = () => {
                             name="email"
                             required
                             placeholder="john@example.com"
+                            suppressHydrationWarning
                             className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-blue-500 transition-colors text-white"
                         />
                     </div>
@@ -115,6 +117,7 @@ const SkillsAndContact = () => {
                         required
                         placeholder="Tell me about your project..."
                         rows={5}
+                        suppressHydrationWarning
                         className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-blue-500 transition-colors text-white resize-none"
                     />
                 </div>
@@ -122,6 +125,7 @@ const SkillsAndContact = () => {
                 <button
                     type="submit"
                     disabled={formStatus === "submitting"}
+                    suppressHydrationWarning
                     className="w-full py-5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-800 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-900/20 active:scale-[0.98]"
                 >
                     {formStatus === "submitting" ? "SENDING..." : (
