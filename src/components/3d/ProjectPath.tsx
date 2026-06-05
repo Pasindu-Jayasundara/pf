@@ -97,7 +97,7 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
 
       {/* The Walking Human Avatar */}
       <group ref={droneRef}>
-        <HumanModel />
+        <HumanModel scrollProgress={scrollProgress} />
       </group>
 
       {/* Project Milestones */}
@@ -130,13 +130,13 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
   );
 };
 
-const HumanModel = () => {
+const HumanModel = ({ scrollProgress }: { scrollProgress: number }) => {
   const bodyRef = useRef<THREE.Group>(null);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (!bodyRef.current) return;
-    // Walk animation
-    const t = state.clock.getElapsedTime();
+    // Walk animation synced to scroll
+    const t = scrollProgress * 100;
     const legL = bodyRef.current.children[2];
     const legR = bodyRef.current.children[3];
     const armL = bodyRef.current.children[4];
@@ -189,7 +189,10 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
 
   useFrame((state) => {
     if (groupRef.current) {
-        groupRef.current.lookAt(state.camera.position);
+        // Look at camera but stay upright
+        const target = state.camera.position.clone();
+        target.y = groupRef.current.position.y;
+        groupRef.current.lookAt(target);
     }
   });
 
@@ -197,7 +200,7 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
     <group ref={groupRef} position={position}>
         <Float speed={3} rotationIntensity={0.2} floatIntensity={0.5}>
             <Text
-                fontSize={2}
+                fontSize={1.2}
                 color="#FFFFFF"
                 anchorX="center"
                 anchorY="middle"
@@ -213,7 +216,7 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
             </Text>
             {/* Background glow plate */}
             <mesh position={[0, 0, -0.8]}>
-              <planeGeometry args={[20, 6]} />
+              <planeGeometry args={[12, 4]} />
               <meshBasicMaterial color="#7342E2" transparent opacity={0.5} />
             </mesh>
         </Float>
@@ -228,8 +231,10 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
 
   useFrame(() => {
     if (groupRef.current && isActive) {
-        // Smoothly rotate to face camera when active
-        groupRef.current.lookAt(camera.position);
+        // Face camera but stay upright (no tilting)
+        const target = camera.position.clone();
+        target.y = groupRef.current.position.y;
+        groupRef.current.lookAt(target);
     }
   });
 
