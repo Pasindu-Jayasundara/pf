@@ -13,15 +13,15 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
   const { viewport } = useThree();
   const isMobile = viewport.width < 5;
 
-  // Define a longer, more winding path for the "road"
+  // Define a cleaner, gentler path
   const curve = useMemo(() => {
     return new CatmullRomCurve3([
       new Vector3(0, 0, 0),
-      new Vector3(10, -2, -15),
-      new Vector3(-10, -5, -35),
-      new Vector3(15, -10, -55),
-      new Vector3(-15, -15, -75),
-      new Vector3(0, -20, -100),
+      new Vector3(5, -1, -20),
+      new Vector3(-5, -3, -50),
+      new Vector3(0, -5, -80),
+      new Vector3(5, -7, -110),
+      new Vector3(0, -10, -150),
     ]);
   }, []);
 
@@ -32,20 +32,22 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
   useFrame((state) => {
     if (!droneRef.current || !state.camera) return;
 
-    // 1. Drone Position & Rotation
+    // 1. Human Position & Rotation
     const progress = Math.max(0.0001, Math.min(scrollProgress, 0.9999));
     const pos = curve.getPointAt(progress);
     const tangent = curve.getTangentAt(progress);
 
-    droneRef.current.position.copy(pos);
+    // Offset human ABOVE the path so it's not overlapped
+    const upOffset = new Vector3(0, 0.8, 0);
+    droneRef.current.position.copy(pos).add(upOffset);
 
     // Look ahead on the path
-    const lookAtPos = curve.getPointAt(Math.min(progress + 0.01, 1));
+    const lookAtPos = curve.getPointAt(Math.min(progress + 0.01, 1)).add(upOffset);
     droneRef.current.lookAt(lookAtPos);
 
     // 2. Camera Following Logic
-    // Offset camera behind and slightly above the drone
-    const offset = new Vector3(0, 3, 8);
+    // Offset camera behind and slightly above the human
+    const offset = new Vector3(0, 4, 10);
     // Rotate offset to match path direction
     const matrix = new Matrix4().lookAt(pos, lookAtPos, new Vector3(0, 1, 0));
     const quat = new Quaternion().setFromRotationMatrix(matrix);
@@ -89,19 +91,9 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
         color="#00F2FE"
       />
 
-      {/* The Moving Drone / Traveler */}
+      {/* The Walking Human Avatar */}
       <group ref={droneRef}>
-        <Float speed={5} rotationIntensity={1} floatIntensity={0.5}>
-            <mesh>
-                <boxGeometry args={[0.6, 0.2, 0.8]} />
-                <meshStandardMaterial color="#7342E2" emissive="#7342E2" emissiveIntensity={0.5} />
-            </mesh>
-            {/* Front Light */}
-            <mesh position={[0, 0, 0.4]}>
-                <sphereGeometry args={[0.1, 16, 16]} />
-                <meshStandardMaterial color="#00F2FE" emissive="#00F2FE" emissiveIntensity={2} />
-            </mesh>
-        </Float>
+        <HumanModel />
       </group>
 
       {/* Project Milestones */}
@@ -131,9 +123,73 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
   );
 };
 
-const ProjectPanel = ({ position, project, isActive }: any) => {
+const HumanModel = () => {
+  const bodyRef = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (!bodyRef.current) return;
+    // Walk animation
+    const t = state.clock.getElapsedTime();
+    const legL = bodyRef.current.children[2];
+    const legR = bodyRef.current.children[3];
+    const armL = bodyRef.current.children[4];
+    const armR = bodyRef.current.children[5];
+
+    if (legL && legR && armL && armR) {
+        legL.rotation.x = Math.sin(t * 10) * 0.5;
+        legR.rotation.x = Math.sin(t * 10 + Math.PI) * 0.5;
+        armL.rotation.x = Math.sin(t * 10 + Math.PI) * 0.5;
+        armR.rotation.x = Math.sin(t * 10) * 0.5;
+    }
+  });
+
   return (
-    <group position={position}>
+    <group ref={bodyRef}>
+      {/* Torso */}
+      <mesh position={[0, 0.5, 0]}>
+        <boxGeometry args={[0.4, 0.6, 0.2]} />
+        <meshStandardMaterial color="#7342E2" />
+      </mesh>
+      {/* Head */}
+      <mesh position={[0, 0.95, 0]}>
+        <sphereGeometry args={[0.15, 16, 16]} />
+        <meshStandardMaterial color="#FFD1AA" />
+      </mesh>
+      {/* Legs */}
+      <mesh position={[-0.1, 0.1, 0]}>
+        <boxGeometry args={[0.15, 0.5, 0.15]} />
+        <meshStandardMaterial color="#3b82f6" />
+      </mesh>
+      <mesh position={[0.1, 0.1, 0]}>
+        <boxGeometry args={[0.15, 0.5, 0.15]} />
+        <meshStandardMaterial color="#3b82f6" />
+      </mesh>
+      {/* Arms */}
+      <mesh position={[-0.25, 0.5, 0]}>
+        <boxGeometry args={[0.1, 0.5, 0.1]} />
+        <meshStandardMaterial color="#7342E2" />
+      </mesh>
+      <mesh position={[0.25, 0.5, 0]}>
+        <boxGeometry args={[0.1, 0.5, 0.1]} />
+        <meshStandardMaterial color="#7342E2" />
+      </mesh>
+    </group>
+  );
+};
+
+const ProjectPanel = ({ position, project, isActive }: any) => {
+  const groupRef = useRef<THREE.Group>(null);
+  const { camera } = useThree();
+
+  useFrame(() => {
+    if (groupRef.current && isActive) {
+        // Smoothly rotate to face camera when active
+        groupRef.current.lookAt(camera.position);
+    }
+  });
+
+  return (
+    <group ref={groupRef} position={position}>
       {/* Floating 3D Panel */}
       <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
         <Box args={[5, 3.5, 0.1]} scale={isActive ? 1.1 : 1}>
