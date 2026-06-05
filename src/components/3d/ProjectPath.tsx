@@ -230,8 +230,9 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
   const { camera } = useThree();
 
   useFrame(() => {
-    if (groupRef.current && isActive) {
+    if (groupRef.current) {
         // Face camera but stay upright (no tilting)
+        // We look at camera's X and Z, but use our own Y
         const target = camera.position.clone();
         target.y = groupRef.current.position.y;
         groupRef.current.lookAt(target);
@@ -241,43 +242,44 @@ const ProjectPanel = ({ position, project, isActive }: any) => {
   return (
     <group ref={groupRef} position={position}>
       {/* Floating 3D Panel - BIGGER */}
-      <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
-        <Box args={[7, 4.5, 0.1]} scale={isActive ? 1.2 : 1}>
+      {/* Set rotationIntensity to 0 to prevent tilting */}
+      <Float speed={2} rotationIntensity={0} floatIntensity={0.5}>
+        <Box args={[7, 4.5, 0.1]} scale={isActive ? 1.3 : 1}>
           <meshStandardMaterial
             color="#0A0C16"
             transparent
-            opacity={0.8}
+            opacity={0.9}
             metalness={0.9}
             roughness={0.1}
           />
         </Box>
 
-        <mesh position={[0, 0, 0.06]} scale={isActive ? 1.1 : 1}>
+        <mesh position={[0, 0, 0.06]} scale={isActive ? 1.2 : 1}>
             <planeGeometry args={[6.8, 4.3]} />
             <meshStandardMaterial
                 color={isActive ? "#7342E2" : "#1e293b"}
                 transparent
-                opacity={0.2}
+                opacity={0.3}
                 emissive={isActive ? "#7342E2" : "#000"}
-                emissiveIntensity={0.5}
+                emissiveIntensity={0.8}
             />
         </mesh>
 
         <Html
           transform
-          distanceFactor={2}
+          distanceFactor={1.8} // Slightly closer to make it bigger
           position={[0, 0, 0.12]}
           className="pointer-events-none select-none"
         >
-          <div className={`w-[600px] p-10 rounded-2xl transition-all duration-500 ${isActive ? 'opacity-100 scale-100' : 'opacity-40 scale-95 grayscale'}`}>
-            <h3 className="text-5xl font-bold text-white mb-4 leading-tight">{project.title}</h3>
-            <p className="text-blue-400 font-mono text-sm mb-4">{project.duration}</p>
-            <p className="text-white/80 text-xl leading-relaxed mb-8 line-clamp-4">
+          <div className={`w-[600px] p-10 rounded-2xl transition-all duration-500 ${isActive ? 'opacity-100 scale-110' : 'opacity-40 scale-90 grayscale'}`}>
+            <h3 className="text-6xl font-bold text-white mb-6 leading-tight">{project.title}</h3>
+            <p className="text-blue-400 font-mono text-lg mb-4">{project.duration}</p>
+            <p className="text-white/90 text-2xl leading-relaxed mb-10 line-clamp-4">
               {project.description}
             </p>
-            <div className="flex flex-wrap gap-2">
-              {project.tags.slice(0, 3).map((tag: string) => (
-                <span key={tag} className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-xs text-white/60">
+            <div className="flex flex-wrap gap-3">
+              {project.tags.slice(0, 4).map((tag: string) => (
+                <span key={tag} className="px-4 py-2 bg-white/10 border border-white/20 rounded-full text-sm text-white/70">
                   {tag}
                 </span>
               ))}
