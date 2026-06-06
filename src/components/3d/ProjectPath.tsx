@@ -2,16 +2,13 @@
 
 import { useRef, useMemo } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { CatmullRomCurve3, Vector3, Matrix4, Quaternion } from "three";
-import { Text, Float, Line, Box, PerspectiveCamera, Html, MeshDistortMaterial } from "@react-three/drei";
+import { CatmullRomCurve3, Vector3 } from "three";
+import { Text, Float, Line, Box, Html } from "@react-three/drei";
 import * as THREE from "three";
 import { PROJECTS } from "@/constants";
 
 export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
   const droneRef = useRef<THREE.Group>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera>(null);
-  const { viewport } = useThree();
-  const isMobile = viewport.width < 5;
 
   // Define a cleaner, gentler path
   const curve = useMemo(() => {
@@ -35,7 +32,6 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
     // 1. Human Position & Rotation
     const progress = Math.max(0.0001, Math.min(scrollProgress, 0.9999));
     const pos = curve.getPointAt(progress);
-    const tangent = curve.getTangentAt(progress);
 
     // Offset human ABOVE the path so it's not overlapped
     // Road radius is 1.5. Human model's feet are slightly below origin, so 1.7 feels solid.
@@ -76,6 +72,8 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
     }
   });
 
+  const currentProgress = THREE.MathUtils.clamp(scrollProgress, 0, 1);
+
   return (
     <group>
       {/* The Road */}
@@ -103,7 +101,7 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
 
       {/* Atmospheric lighting following the drone */}
       <pointLight
-        position={curve.getPointAt(scrollProgress)}
+        position={curve.getPointAt(currentProgress)}
         intensity={30}
         distance={30}
         color="#00F2FE"
@@ -119,24 +117,38 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
         const t = 0.2 + (i * 0.22); // Distribute projects along the path
         const position = curve.getPointAt(t);
         const tangent = curve.getTangentAt(t);
+        const side = i % 2 === 0 ? 1 : -1;
+        const worldUp = new Vector3(0, 1, 0);
 
-        // Offset panel to the side of the road - moved further to avoid clipping
-        const sideOffset = new Vector3(6.5, 2.5, 0);
-        const matrix = new Matrix4().lookAt(new Vector3(0, 0, 0), tangent, new Vector3(0, 1, 0));
-        const quat = new Quaternion().setFromRotationMatrix(matrix);
-        sideOffset.applyQuaternion(quat);
-
-        const panelPos = position.clone().add(sideOffset);
+        const sideOffset = new Vector3()
+          .crossVectors(tangent, worldUp)
+          .normalize()
+          .multiplyScalar(side * 8);
+        const panelPos = position
+          .clone()
+          .add(sideOffset)
+          .add(new Vector3(0, 2.8, 0));
+        const roadAnchor = position.clone().add(new Vector3(0, 1.2, 0));
+        const panelAnchor = panelPos.clone().add(new Vector3(0, -1.4, 0));
+        const distanceFromProject = Math.abs(currentProgress - t);
+        const focus = THREE.MathUtils.clamp(1 - distanceFromProject / 0.2, 0, 1);
+        const easedFocus = THREE.MathUtils.smoothstep(focus, 0, 1);
 
         return (
-          <ProjectPanel
-            key={i}
-            position={panelPos}
-            roadPosition={position}
-            project={project}
-            isActive={Math.abs(scrollProgress - t) < 0.08}
-            isNear={Math.abs(scrollProgress - t) < 0.2}
-          />
+          <group key={project.title}>
+            <Line
+              points={[roadAnchor, panelAnchor]}
+              color={easedFocus > 0.6 ? "#00F2FE" : "#334155"}
+              lineWidth={2}
+              transparent
+              opacity={easedFocus * 0.6}
+            />
+            <ProjectPanel
+              position={panelPos}
+              project={project}
+              focus={focus}
+            />
+          </group>
         );
       })}
 
@@ -147,23 +159,27 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
 };
 
 const HumanModel = ({ scrollProgress }: { scrollProgress: number }) => {
-  const legLRef = useRef<THREE.Mesh>(null);
-  const legRRef = useRef<THREE.Mesh>(null);
-  const armLRef = useRef<THREE.Mesh>(null);
-  const armRRef = useRef<THREE.Mesh>(null);
+  const bodyRef = useRef<THREE.Group>(null);
+  const legLRef = useRef<THREE.Group>(null);
+  const legRRef = useRef<THREE.Group>(null);
+  const armLRef = useRef<THREE.Group>(null);
+  const armRRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
-    // Walk animation synced to scroll
-    const t = scrollProgress * 100;
+    // Walk animation synced to scroll with a stable stride count.
+    const phase = scrollProgress * Math.PI * 24;
+    const swing = Math.sin(phase) * 0.45;
+    const bob = Math.abs(Math.sin(phase)) * 0.06;
 
-    if (legLRef.current) legLRef.current.rotation.x = Math.sin(t * 10) * 0.5;
-    if (legRRef.current) legRRef.current.rotation.x = Math.sin(t * 10 + Math.PI) * 0.5;
-    if (armLRef.current) armLRef.current.rotation.x = Math.sin(t * 10 + Math.PI) * 0.5;
-    if (armRRef.current) armRRef.current.rotation.x = Math.sin(t * 10) * 0.5;
+    if (bodyRef.current) bodyRef.current.position.y = bob;
+    if (legLRef.current) legLRef.current.rotation.x = swing;
+    if (legRRef.current) legRRef.current.rotation.x = -swing;
+    if (armLRef.current) armLRef.current.rotation.x = -swing;
+    if (armRRef.current) armRRef.current.rotation.x = swing;
   });
 
   return (
-    <group>
+    <group ref={bodyRef}>
       {/* Torso */}
       <mesh position={[0, 0.5, 0]}>
         <boxGeometry args={[0.4, 0.6, 0.2]} />
@@ -175,23 +191,31 @@ const HumanModel = ({ scrollProgress }: { scrollProgress: number }) => {
         <meshStandardMaterial color="#FFD1AA" />
       </mesh>
       {/* Legs */}
-      <mesh ref={legLRef} position={[-0.1, 0.1, 0]}>
-        <boxGeometry args={[0.15, 0.5, 0.15]} />
-        <meshStandardMaterial color="#3b82f6" />
-      </mesh>
-      <mesh ref={legRRef} position={[0.1, 0.1, 0]}>
-        <boxGeometry args={[0.15, 0.5, 0.15]} />
-        <meshStandardMaterial color="#3b82f6" />
-      </mesh>
+      <group ref={legLRef} position={[-0.1, 0.35, 0]}>
+        <mesh position={[0, -0.25, 0]}>
+          <boxGeometry args={[0.15, 0.5, 0.15]} />
+          <meshStandardMaterial color="#3b82f6" />
+        </mesh>
+      </group>
+      <group ref={legRRef} position={[0.1, 0.35, 0]}>
+        <mesh position={[0, -0.25, 0]}>
+          <boxGeometry args={[0.15, 0.5, 0.15]} />
+          <meshStandardMaterial color="#3b82f6" />
+        </mesh>
+      </group>
       {/* Arms */}
-      <mesh ref={armLRef} position={[-0.25, 0.5, 0]}>
-        <boxGeometry args={[0.1, 0.5, 0.1]} />
-        <meshStandardMaterial color="#7342E2" />
-      </mesh>
-      <mesh ref={armRRef} position={[0.25, 0.5, 0]}>
-        <boxGeometry args={[0.1, 0.5, 0.1]} />
-        <meshStandardMaterial color="#7342E2" />
-      </mesh>
+      <group ref={armLRef} position={[-0.25, 0.75, 0]}>
+        <mesh position={[0, -0.25, 0]}>
+          <boxGeometry args={[0.1, 0.5, 0.1]} />
+          <meshStandardMaterial color="#7342E2" />
+        </mesh>
+      </group>
+      <group ref={armRRef} position={[0.25, 0.75, 0]}>
+        <mesh position={[0, -0.25, 0]}>
+          <boxGeometry args={[0.1, 0.5, 0.1]} />
+          <meshStandardMaterial color="#7342E2" />
+        </mesh>
+      </group>
     </group>
   );
 };
@@ -234,9 +258,16 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
   );
 };
 
-const ProjectPanel = ({ position, roadPosition, project, isActive, isNear }: any) => {
+type ProjectPanelProps = {
+  position: Vector3;
+  project: (typeof PROJECTS)[number];
+  focus: number;
+};
+
+const ProjectPanel = ({ position, project, focus }: ProjectPanelProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
+  const easedFocus = THREE.MathUtils.smoothstep(focus, 0, 1);
 
   useFrame(() => {
     if (groupRef.current) {
@@ -247,33 +278,28 @@ const ProjectPanel = ({ position, roadPosition, project, isActive, isNear }: any
     }
   });
 
-  // Calculate local vector from panel to road
-  const roadLocal = useMemo(() => {
-    return new Vector3().copy(roadPosition).sub(position);
-  }, [roadPosition, position]);
-
   return (
-    <group ref={groupRef} position={position} visible={isNear}>
+    <group ref={groupRef} position={position} scale={0.78 + easedFocus * 0.28}>
       {/* Floating 3D Panel */}
       <Float speed={2} rotationIntensity={0} floatIntensity={0.5}>
-        <Box args={[7, 4.5, 0.1]} scale={isActive ? 1.4 : 1}>
+        <Box args={[7, 4.5, 0.1]}>
           <meshStandardMaterial
             color="#0A0C16"
             transparent
-            opacity={isActive ? 1 : 0.7}
+            opacity={easedFocus}
             metalness={0.9}
             roughness={0.1}
           />
         </Box>
 
-        <mesh position={[0, 0, 0.06]} scale={isActive ? 1.3 : 1}>
+        <mesh position={[0, 0, 0.06]}>
             <planeGeometry args={[6.8, 4.3]} />
             <meshStandardMaterial
-                color={isActive ? "#7342E2" : "#3b82f6"}
+                color={easedFocus > 0.6 ? "#7342E2" : "#3b82f6"}
                 transparent
-                opacity={isActive ? 0.5 : 0.3}
-                emissive={isActive ? "#7342E2" : "#3b82f6"}
-                emissiveIntensity={isActive ? 2 : 0.5}
+                opacity={easedFocus * 0.5}
+                emissive={easedFocus > 0.6 ? "#7342E2" : "#3b82f6"}
+                emissiveIntensity={0.4 + easedFocus * 1.6}
             />
         </mesh>
 
@@ -283,7 +309,14 @@ const ProjectPanel = ({ position, roadPosition, project, isActive, isNear }: any
           position={[0, 0, 0.2]}
           className="pointer-events-none select-none"
         >
-          <div className={`w-[800px] p-10 rounded-2xl transition-all duration-500 bg-black/60 backdrop-blur-xl border border-white/20 ${isActive ? 'opacity-100 scale-105' : 'opacity-60 scale-90'}`}>
+          <div
+            className="w-[800px] p-10 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/20"
+            style={{
+              opacity: easedFocus,
+              transform: `scale(${0.92 + easedFocus * 0.08})`,
+              transition: "opacity 180ms ease, transform 180ms ease",
+            }}
+          >
             <h3 className="text-6xl font-bold text-white mb-6 leading-tight">{project.title}</h3>
             <p className="text-blue-400 font-mono text-2xl mb-4">{project.duration}</p>
             <p className="text-white/90 text-2xl leading-relaxed mb-10">
@@ -299,18 +332,6 @@ const ProjectPanel = ({ position, roadPosition, project, isActive, isNear }: any
           </div>
         </Html>
       </Float>
-
-      {/* Decorative Connector to Road */}
-      <Line
-        // We need to rotate the roadLocal back into the panel's local space to point correctly
-        // But since we use lookAt, it's easier to just draw a line in world space if possible?
-        // R3F Line points are local.
-        points={[new Vector3(0, 0, 0), new Vector3(0, -2.5, -5)]} // Simplified placeholder that points generally down/back
-        color={isActive ? "#00F2FE" : "#334155"}
-        lineWidth={2}
-        transparent
-        opacity={0.5}
-      />
     </group>
   );
 };

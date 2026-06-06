@@ -1,12 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef, useState, Suspense } from "react";
+import React, { useLayoutEffect, useRef, useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ProjectPath } from "@/components/3d/ProjectPath";
-import { PROJECTS } from "@/constants";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ExternalLink, GitBranch } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,78 +14,80 @@ const Projects = () => {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  useEffect(() => {
-    // 1. Scene Scroll Progress (Starts after intro)
-    const trigger = ScrollTrigger.create({
-      trigger: containerRef.current,
-      start: "top top",
-      end: "bottom bottom",
-      onUpdate: (self) => {
-        // Map 0.15 - 1.0 to 0.0 - 1.0 for the 3D journey
-        const progress = Math.max(0, (self.progress - 0.15) / 0.85);
-        setScrollProgress(progress);
-      },
-    });
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const introTitle = introTitleRef.current;
+    const canvasContainer = canvasContainerRef.current;
 
-    // 2. Intro Animation Timeline
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top top",
-        end: "top -100%", // The animation takes 100vh of scrolling
-        scrub: true,
-        pin: true, // Pin the section while title moves
-      }
-    });
+    if (!container || !introTitle || !canvasContainer) return;
 
-    tl.fromTo(introTitleRef.current,
-      {
-        y: "40vh",
-        x: "0%",
-        left: "50%",
+    const ctx = gsap.context(() => {
+      gsap.set(introTitle, {
         top: "50%",
-        translateX: "-50%",
-        translateY: "-50%",
+        left: "50%",
+        xPercent: -50,
+        yPercent: -50,
+        y: "40vh",
         scale: 1.5,
-        opacity: 0
-      },
-      {
-        opacity: 1,
-        duration: 0.5
-      }
-    )
-    .to(introTitleRef.current, {
-      top: "40px",
-      left: "40px",
-      x: "0%",
-      translateX: "0%",
-      translateY: "0%",
-      y: "0",
-      scale: 0.5, // Standard size
-      duration: 1.5,
-      ease: "power2.inOut"
-    })
-    .to(canvasContainerRef.current, {
-      opacity: 1,
-      duration: 1,
-    }, "-=0.5"); // Reveal canvas as title reaches corner
+        autoAlpha: 0,
+        transformOrigin: "left top",
+      });
+      gsap.set(canvasContainer, { autoAlpha: 0 });
 
-    gsap.utils.toArray(".project-card").forEach((card: any, i) => {
-      gsap.fromTo(card,
-        { opacity: 0, y: 100, scale: 0.9 },
-        {
-          opacity: 1, y: 0, scale: 1,
-          scrollTrigger: {
-            trigger: card,
-            start: "top 80%",
-            end: "top 40%",
-            scrub: true,
-          }
-        }
-      );
-    });
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: "top top",
+          end: "top -100%",
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      })
+        .to(introTitle, {
+          autoAlpha: 1,
+          duration: 0.35,
+          ease: "none",
+        })
+        .to(introTitle, {
+          top: "40px",
+          left: "40px",
+          xPercent: 0,
+          yPercent: 0,
+          y: 0,
+          scale: 0.5,
+          duration: 1,
+          ease: "power2.inOut",
+        })
+        .to(canvasContainer, {
+          autoAlpha: 1,
+          duration: 0.45,
+          ease: "none",
+        }, "-=0.25");
 
-    return () => trigger.kill();
+      ScrollTrigger.create({
+        trigger: container,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const introProgress = 1 / 6;
+          const progress = gsap.utils.clamp(
+            0,
+            1,
+            (self.progress - introProgress) / (1 - introProgress)
+          );
+
+          setScrollProgress((current) => (
+            Math.abs(current - progress) > 0.001 ? progress : current
+          ));
+        },
+      });
+    }, container);
+
+    ScrollTrigger.refresh();
+
+    return () => ctx.revert();
   }, []);
 
   return (
