@@ -50,14 +50,26 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
     // We want the camera to always be above and behind the human in world space
     // to avoid clipping through the tube as it curves.
     // Adjusted Y and Z offset for better framing.
-    const targetCameraPos = pos.clone().add(new Vector3(0, 8, 15));
+    let cameraOffset = new Vector3(0, 8, 15);
+
+    // Zoom out and focus at the end to see the final milestone
+    if (progress > 0.95) {
+        cameraOffset = new Vector3(0, 6, 12);
+    }
+
+    const targetCameraPos = pos.clone().add(cameraOffset);
     state.camera.position.lerp(targetCameraPos, 0.1);
 
     // Look ahead at the human and slightly beyond
-    if (progress > 0.92) {
-        // At the end, focus on the final milestone
+    if (progress > 0.97) {
+        // At the very end, focus exactly on the final milestone
         const milestonePos = curve.getPointAt(1).add(new Vector3(0, 3, 0));
         state.camera.lookAt(milestonePos);
+    } else if (progress > 0.90) {
+        // Transition lookAt
+        const milestonePos = curve.getPointAt(1).add(new Vector3(0, 3, 0));
+        const lookTarget = pos.clone().add(new Vector3(0, 2, 0)).lerp(milestonePos, (progress - 0.9) * 10);
+        state.camera.lookAt(lookTarget);
     } else {
         // Look at the human's feet/road position but slightly ahead
         state.camera.lookAt(pos.clone().add(new Vector3(0, 2, 0)));
@@ -189,7 +201,7 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
 
   useFrame((state) => {
     if (groupRef.current) {
-        // Look at camera but stay upright
+        // Face camera but stay upright
         const target = state.camera.position.clone();
         target.y = groupRef.current.position.y;
         groupRef.current.lookAt(target);
@@ -198,31 +210,71 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
 
   return (
     <group ref={groupRef} position={position}>
-        <Float speed={3} rotationIntensity={0.2} floatIntensity={0.5}>
+        <Float speed={4} rotationIntensity={0.1} floatIntensity={0.3}>
             <Text
-                fontSize={1.2}
+                fontSize={0.6}
                 color="#FFFFFF"
                 anchorX="center"
                 anchorY="middle"
-                maxWidth={40}
+                maxWidth={20}
+                letterSpacing={0.25}
+                font="/fonts/Geist-Bold.ttf"
             >
                 THE JOURNEY CONTINUES...
                 <meshStandardMaterial
                   color="#FFFFFF"
-                  emissive="#FFFFFF"
-                  emissiveIntensity={2}
+                  emissive="#00F2FE"
+                  emissiveIntensity={12}
                   toneMapped={false}
                 />
             </Text>
-            {/* Background glow plate */}
-            <mesh position={[0, 0, -0.8]}>
-              <planeGeometry args={[12, 4]} />
-              <meshBasicMaterial color="#7342E2" transparent opacity={0.5} />
+
+            {/* Futuristic Frame */}
+            <mesh position={[0, 0, -0.05]}>
+              <planeGeometry args={[6.5, 1.2]} />
+              <meshBasicMaterial color="#0A0C16" transparent opacity={0.9} />
             </mesh>
+
+            {/* Glowing Border */}
+            <Line
+              points={[
+                [-3.25, -0.6, 0], [3.25, -0.6, 0], [3.25, 0.6, 0], [-3.25, 0.6, 0], [-3.25, -0.6, 0]
+              ]}
+              color="#00F2FE"
+              lineWidth={1.5}
+              transparent
+              opacity={0.8}
+            />
+
+            <ScanLine width={6.5} height={1.2} />
+
+            {/* Accent Corners */}
+            <group scale={0.4}>
+               <Line points={[[-8.1, -1.5, 0], [-6.5, -1.5, 0]]} color="#7342E2" lineWidth={4} />
+               <Line points={[[-8.1, -1.5, 0], [-8.1, -0.5, 0]]} color="#7342E2" lineWidth={4} />
+
+               <Line points={[[8.1, 1.5, 0], [6.5, 1.5, 0]]} color="#7342E2" lineWidth={4} />
+               <Line points={[[8.1, 1.5, 0], [8.1, 0.5, 0]]} color="#7342E2" lineWidth={4} />
+            </group>
         </Float>
-        <pointLight intensity={200} distance={100} color="#7342E2" />
+        <pointLight intensity={150} distance={40} color="#00F2FE" />
     </group>
   );
+};
+
+const ScanLine = ({ width, height }: { width: number, height: number }) => {
+    const ref = useRef<THREE.Mesh>(null);
+    useFrame((state) => {
+        if (ref.current) {
+            ref.current.position.y = Math.sin(state.clock.elapsedTime * 2) * (height / 2);
+        }
+    });
+    return (
+        <mesh ref={ref} position={[0, 0, 0.01]}>
+            <planeGeometry args={[width, 0.05]} />
+            <meshBasicMaterial color="#00F2FE" transparent opacity={0.5} />
+        </mesh>
+    );
 };
 
 const ProjectPanel = ({ position, roadPosition, project, isActive, isNear }: any) => {
