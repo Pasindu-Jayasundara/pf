@@ -206,7 +206,7 @@ const Hero = () => {
               href="#projects"
               className="inline-flex items-center justify-between gap-8 bg-[#7342E2] text-white rounded-full px-8 py-5 font-semibold text-[clamp(0.9rem,2vw,1rem)] shadow-[0_4px_24px_rgba(115,66,226,0.4)] hover:scale-[1.04] hover:brightness-110 active:scale-[0.96] transition-all group"
             >
-              <span>View Portfolio</span>
+              <span>Explore My Journey</span>
               <ArrowRightCircle size={20} className="group-hover:translate-x-1 transition-transform" />
             </Link>
 

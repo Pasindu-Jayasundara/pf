@@ -9,9 +9,7 @@ import {
   Sphere,
   Environment,
   PresentationControls,
-  ContactShadows,
-  Instances,
-  Instance
+  ContactShadows
 } from "@react-three/drei";
 import * as THREE from "three";
 

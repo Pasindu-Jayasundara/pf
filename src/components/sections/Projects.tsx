@@ -24,14 +24,14 @@ const Projects = () => {
       },
     });
 
-    // Fade out intro title quickly
+    // Fade out intro title as we scroll deep into the section
     gsap.to(".projects-intro", {
       opacity: 0,
-      y: -200,
+      y: -100,
       scrollTrigger: {
         trigger: containerRef.current,
         start: "top top",
-        end: "top -50%", // Fully gone after scrolling half a screen
+        end: "top -10%",
         scrub: true,
       }
     });
@@ -56,7 +56,7 @@ const Projects = () => {
 
   return (
     <section id="projects" ref={containerRef} className="relative min-h-[600vh] bg-[#050816]">
-      <div className="sticky top-0 h-screen w-full z-0 overflow-hidden">
+      <div className="sticky top-0 h-screen w-full z-10 overflow-hidden">
         <Canvas
           camera={{ position: [0, 5, 10], fov: 50 }}
           resize={{ scroll: false }}
@@ -69,20 +69,23 @@ const Projects = () => {
             <ProjectPath scrollProgress={scrollProgress} />
           </Suspense>
         </Canvas>
-      </div>
 
-      <div className="relative z-10 pointer-events-none">
-        <div className="h-screen flex flex-col items-center justify-center text-center px-4 projects-intro">
-          <h2 className="text-5xl md:text-7xl font-heading text-white mb-4">The Project Journey</h2>
-          <p className="text-white/50 font-mono tracking-widest uppercase text-sm">Scroll to travel through my milestones</p>
-          <div className="mt-12 animate-bounce opacity-20">
-            <div className="w-px h-24 bg-gradient-to-b from-transparent via-white to-transparent" />
+        {/* Intro Overlay */}
+        <div className="absolute inset-0 z-20 pointer-events-none projects-intro flex flex-col items-center justify-center text-center px-4">
+          <h2 className="text-6xl md:text-9xl font-bold text-white mb-6 drop-shadow-[0_0_50px_rgba(37,99,235,0.8)] uppercase tracking-tighter">
+            The Project Journey
+          </h2>
+          <p className="text-blue-400 font-mono tracking-[0.3em] uppercase text-xl">
+            Scroll to travel through my milestones
+          </p>
+          <div className="mt-16 animate-bounce">
+            <div className="w-px h-24 bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
           </div>
         </div>
-
-        {/* Spacing for scroll depth */}
-        <div className="h-[500vh]" />
       </div>
+
+      {/* Spacer to allow scrolling through the 3D path */}
+      <div className="h-[500vh] pointer-events-none" />
     </section>
   );
 };
