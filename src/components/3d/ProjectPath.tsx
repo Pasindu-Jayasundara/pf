@@ -228,53 +228,10 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
                   toneMapped={false}
                 />
             </Text>
-
-            {/* Futuristic Frame */}
-            <mesh position={[0, 0, -0.05]}>
-              <planeGeometry args={[6.5, 1.2]} />
-              <meshBasicMaterial color="#0A0C16" transparent opacity={0.9} />
-            </mesh>
-
-            {/* Glowing Border */}
-            <Line
-              points={[
-                [-3.25, -0.6, 0], [3.25, -0.6, 0], [3.25, 0.6, 0], [-3.25, 0.6, 0], [-3.25, -0.6, 0]
-              ]}
-              color="#00F2FE"
-              lineWidth={1.5}
-              transparent
-              opacity={0.8}
-            />
-
-            <ScanLine width={6.5} height={1.2} />
-
-            {/* Accent Corners */}
-            <group scale={0.4}>
-               <Line points={[[-8.1, -1.5, 0], [-6.5, -1.5, 0]]} color="#7342E2" lineWidth={4} />
-               <Line points={[[-8.1, -1.5, 0], [-8.1, -0.5, 0]]} color="#7342E2" lineWidth={4} />
-
-               <Line points={[[8.1, 1.5, 0], [6.5, 1.5, 0]]} color="#7342E2" lineWidth={4} />
-               <Line points={[[8.1, 1.5, 0], [8.1, 0.5, 0]]} color="#7342E2" lineWidth={4} />
-            </group>
         </Float>
         <pointLight intensity={150} distance={40} color="#00F2FE" />
     </group>
   );
-};
-
-const ScanLine = ({ width, height }: { width: number, height: number }) => {
-    const ref = useRef<THREE.Mesh>(null);
-    useFrame((state) => {
-        if (ref.current) {
-            ref.current.position.y = Math.sin(state.clock.elapsedTime * 2) * (height / 2);
-        }
-    });
-    return (
-        <mesh ref={ref} position={[0, 0, 0.01]}>
-            <planeGeometry args={[width, 0.05]} />
-            <meshBasicMaterial color="#00F2FE" transparent opacity={0.5} />
-        </mesh>
-    );
 };
 
 const ProjectPanel = ({ position, roadPosition, project, isActive, isNear }: any) => {
