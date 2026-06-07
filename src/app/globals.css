@@ -51,6 +51,9 @@
   --project-tag-bg: rgba(37, 99, 235, 0.08);
   --project-tag-border: rgba(37, 99, 235, 0.18);
   --project-tag-text: #1e3a8a;
+  --particle-primary: rgba(37, 99, 235, 0.52);
+  --particle-secondary: rgba(115, 66, 226, 0.42);
+  --particle-tertiary: rgba(8, 145, 178, 0.38);
   --glow-shadow: 0 0 24px rgba(37, 99, 235, 0.18);
   --card-shadow: 0 18px 48px rgba(15, 23, 42, 0.1);
   color-scheme: light;
@@ -96,6 +99,9 @@
     --project-tag-bg: rgba(255, 255, 255, 0.1);
     --project-tag-border: rgba(255, 255, 255, 0.2);
     --project-tag-text: rgba(255, 255, 255, 0.8);
+    --particle-primary: rgba(96, 165, 250, 0.34);
+    --particle-secondary: rgba(115, 66, 226, 0.4);
+    --particle-tertiary: rgba(34, 211, 238, 0.3);
     --glow-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     --card-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
     color-scheme: dark;
@@ -310,6 +316,72 @@ body {
   color: var(--project-tag-text);
 }
 
+.ambient-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-particle {
+  position: absolute;
+  left: var(--particle-x);
+  top: var(--particle-y);
+  width: var(--particle-size);
+  height: var(--particle-size);
+  opacity: var(--particle-opacity);
+  transform: translate3d(-50%, -50%, 0) rotate(var(--particle-rotation));
+  animation: ambient-particle-drift var(--particle-duration) ease-in-out var(--particle-delay) infinite alternate;
+}
+
+.ambient-particle-pixel {
+  width: calc(var(--particle-size) * 0.42);
+  height: calc(var(--particle-size) * 0.42);
+  background: var(--particle-primary);
+}
+
+.ambient-particle-dash {
+  height: 1px;
+  background: var(--particle-tertiary);
+}
+
+.ambient-particle-diamond {
+  border: 1px solid var(--particle-secondary);
+}
+
+.ambient-particle-cross::before,
+.ambient-particle-cross::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  background: var(--particle-primary);
+  transform: translate(-50%, -50%);
+}
+
+.ambient-particle-cross::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+@keyframes ambient-particle-drift {
+  from {
+    transform: translate3d(-50%, -50%, 0) rotate(var(--particle-rotation));
+  }
+
+  to {
+    transform:
+      translate3d(
+        calc(-50% + var(--particle-drift-x)),
+        calc(-50% + var(--particle-drift-y)),
+        0
+      )
+      rotate(calc(var(--particle-rotation) + 55deg));
+  }
+}
+
 .blog-art {
   background: linear-gradient(135deg, rgba(219, 234, 254, 0.9), rgba(226, 232, 240, 0.95));
 }
@@ -349,5 +421,11 @@ body {
   :root {
     --hero-overlay: linear-gradient(to right, #050816 0%, rgba(5, 8, 22, 0.9) 58%, rgba(5, 8, 22, 0.62) 100%);
     --hero-canvas-opacity: 0.58;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-particle {
+    animation: none;
   }
 }

@@ -2,13 +2,15 @@
 
 import React from "react";
 import { SESSIONS } from "@/constants";
+import AmbientParticles from "@/components/ui/AmbientParticles";
 import { motion } from "framer-motion";
 import { Calendar, Users, MapPin } from "lucide-react";
 
 const Sessions = () => {
   return (
-    <section id="sessions" className="theme-section py-24 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="sessions" className="theme-section relative overflow-hidden py-24 px-6">
+      <AmbientParticles count={40} />
+      <div className="relative z-10 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
             <div>
                 <h2 className="text-4xl md:text-5xl font-bold text-glow mb-4">Technical Sessions</h2>

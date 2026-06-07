@@ -2,13 +2,15 @@
 
 import React from "react";
 import { BLOG_POSTS } from "@/constants";
+import AmbientParticles from "@/components/ui/AmbientParticles";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 const Blog = () => {
   return (
-    <section id="blog" className="theme-section-alt py-24 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="blog" className="theme-section-alt relative overflow-hidden py-24 px-6">
+      <AmbientParticles count={36} />
+      <div className="relative z-10 max-w-7xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-bold text-glow mb-16 text-center">Latest Insights</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">

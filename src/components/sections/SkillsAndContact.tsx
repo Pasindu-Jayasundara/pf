@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { SKILLS, PERSONAL_INFO, VOLUNTEERING } from "@/constants";
+import AmbientParticles from "@/components/ui/AmbientParticles";
 import { Mail, ExternalLink, Link as LinkIcon, MessageSquare, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -39,8 +40,9 @@ const SkillsAndContact = () => {
   };
 
   return (
-    <section id="skills" className="theme-section-alt py-24 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
+    <section id="skills" className="theme-section-alt relative overflow-hidden py-24 px-6">
+      <AmbientParticles count={46} />
+      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
 
         <div>
           <h2 className="text-4xl md:text-5xl font-bold mb-12 text-glow">Expertise & Impact</h2>

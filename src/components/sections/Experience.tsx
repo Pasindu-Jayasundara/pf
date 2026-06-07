@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { EXPERIENCE, EDUCATION } from "@/constants";
+import AmbientParticles from "@/components/ui/AmbientParticles";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Briefcase, GraduationCap } from "lucide-react";
@@ -97,8 +98,9 @@ const Experience = () => {
   }, []);
 
   return (
-    <section id="experience" ref={sectionRef} className="theme-section-alt py-16 px-5 sm:px-6 md:py-24">
-      <div className="max-w-5xl mx-auto">
+    <section id="experience" ref={sectionRef} className="theme-section-alt relative overflow-hidden py-16 px-5 sm:px-6 md:py-24">
+      <AmbientParticles count={34} />
+      <div className="relative z-10 max-w-5xl mx-auto">
         <h2 className="text-3xl sm:text-4xl font-bold mb-12 md:mb-16 text-center text-glow">
           Professional Journey
         </h2>

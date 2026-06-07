@@ -14,6 +14,7 @@ type ProjectPathProps = {
 
 export const ProjectPath = ({ scrollProgress, isDark }: ProjectPathProps) => {
   const droneRef = useRef<THREE.Group>(null);
+  const particleGroupRef = useRef<THREE.Group>(null);
 
   // Define a cleaner, gentler path
   const curve = useMemo(() => {
@@ -29,6 +30,24 @@ export const ProjectPath = ({ scrollProgress, isDark }: ProjectPathProps) => {
 
   const roadGeometry = useMemo(() => {
     return new THREE.TubeGeometry(curve, 100, 1.5, 8, false);
+  }, [curve]);
+
+  const sceneParticles = useMemo(() => {
+    return Array.from({ length: 48 }, (_, index) => {
+      const t = 0.03 + (index / 47) * 0.94;
+      const base = curve.getPointAt(t);
+      const side = index % 2 === 0 ? 1 : -1;
+      const xOffset = Math.sin(index * 1.73) * 7 + side * (4 + (index % 5));
+      const yOffset = 2 + Math.cos(index * 1.17) * 4 + (index % 4);
+      const zOffset = Math.cos(index * 2.11) * 8;
+
+      return {
+        position: base.clone().add(new Vector3(xOffset, yOffset, zOffset)),
+        rotation: [index * 0.37, index * 0.61, index * 0.23] as [number, number, number],
+        scale: 0.08 + (index % 5) * 0.035,
+        color: index % 3 === 0 ? "#00F2FE" : index % 3 === 1 ? "#7342E2" : "#3b82f6",
+      };
+    });
   }, [curve]);
 
   useFrame((state) => {
@@ -75,6 +94,11 @@ export const ProjectPath = ({ scrollProgress, isDark }: ProjectPathProps) => {
         // Look at the human's feet/road position but slightly ahead
         state.camera.lookAt(pos.clone().add(new Vector3(0, 2, 0)));
     }
+
+    if (particleGroupRef.current) {
+      particleGroupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.12) * 0.025;
+      particleGroupRef.current.rotation.x = Math.cos(state.clock.elapsedTime * 0.1) * 0.012;
+    }
   });
 
   const currentProgress = THREE.MathUtils.clamp(scrollProgress, 0, 1);
@@ -103,6 +127,31 @@ export const ProjectPath = ({ scrollProgress, isDark }: ProjectPathProps) => {
         transparent
         opacity={isDark ? 0.8 : 0.55}
       />
+
+      <group ref={particleGroupRef}>
+        {sceneParticles.map((particle, index) => (
+          <mesh
+            key={index}
+            position={particle.position}
+            rotation={particle.rotation}
+            scale={particle.scale}
+          >
+            {index % 2 === 0 ? (
+              <octahedronGeometry args={[1, 0]} />
+            ) : (
+              <boxGeometry args={[1, 1, 1]} />
+            )}
+            <meshStandardMaterial
+              color={particle.color}
+              emissive={particle.color}
+              emissiveIntensity={isDark ? 0.75 : 0.18}
+              transparent
+              opacity={isDark ? 0.42 : 0.26}
+              roughness={0.35}
+            />
+          </mesh>
+        ))}
+      </group>
 
       {/* Atmospheric lighting following the drone */}
       <pointLight
