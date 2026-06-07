@@ -7,7 +7,7 @@ import { ArrowUpRight } from "lucide-react";
 
 const Blog = () => {
   return (
-    <section id="blog" className="py-24 px-6 bg-slate-900/30">
+    <section id="blog" className="theme-section-alt py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-bold text-glow mb-16 text-center">Latest Insights</h2>
 
@@ -24,13 +24,13 @@ const Blog = () => {
               viewport={{ once: true }}
               className="flex flex-col group"
             >
-              <div className="relative aspect-[16/10] bg-slate-800 rounded-3xl mb-6 overflow-hidden">
+              <div className="theme-card-solid relative aspect-[16/10] rounded-3xl mb-6 overflow-hidden">
                 {/* Abstract Blog Placeholder */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-slate-950 flex items-center justify-center">
-                    <span className="text-6xl font-black text-blue-500/10 tracking-tighter">POST #{index + 1}</span>
+                <div className="blog-art absolute inset-0 flex items-center justify-center">
+                    <span className="blog-art-label text-6xl font-black tracking-tighter">POST #{index + 1}</span>
                 </div>
-                <div className="absolute top-4 right-4 p-2 bg-slate-950/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ArrowUpRight size={20} className="text-blue-400" />
+                <div className="blog-art-button absolute top-4 right-4 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ArrowUpRight size={20} />
                 </div>
               </div>
 
@@ -39,7 +39,7 @@ const Blog = () => {
                 <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-400 transition-colors leading-snug">
                   {post.title}
                 </h3>
-                <p className="text-slate-400 mb-6 line-clamp-2 leading-relaxed">
+                <p className="theme-muted mb-6 line-clamp-2 leading-relaxed">
                   {post.excerpt}
                 </p>
                 <div className="w-10 h-1 bg-blue-600 group-hover:w-24 transition-all duration-500" />
@@ -52,7 +52,7 @@ const Blog = () => {
             <a
                 href="https://bhbg45.blogspot.com/"
                 target="_blank"
-                className="px-10 py-4 border-2 border-slate-800 hover:border-blue-500 rounded-full font-bold transition-all text-sm tracking-widest"
+                className="theme-border px-10 py-4 border-2 hover:border-blue-500 rounded-full font-bold transition-all text-sm tracking-widest"
             >
                 VISIT BLOG
             </a>

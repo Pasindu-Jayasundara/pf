@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo, Suspense } from "react";
+import React, { useRef, useMemo, Suspense, useEffect, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Float,
@@ -107,7 +107,7 @@ const InteractiveCore = () => {
   );
 };
 
-const CodingParticles = () => {
+const CodingParticles = ({ isDark }: { isDark: boolean }) => {
   const particles = useMemo(() => {
     const temp = [];
     const strings = ["<dev>", "{JSON}", "0101", "const", "=>", "push", "git", "React", "Next.js"];
@@ -131,8 +131,8 @@ const CodingParticles = () => {
         <Float key={i} speed={1} position={p.pos as any}>
           <Text
             fontSize={0.3}
-            color="#FFFFFF"
-            fillOpacity={0.2}
+            color={isDark ? "#FFFFFF" : "#0f172a"}
+            fillOpacity={isDark ? 0.2 : 0.18}
           >
             {p.text}
           </Text>
@@ -142,9 +142,31 @@ const CodingParticles = () => {
   );
 };
 
+const usePrefersDark = () => {
+  const [isDark, setIsDark] = useState(() => (
+    typeof window === "undefined"
+      ? false
+      : window.matchMedia("(prefers-color-scheme: dark)").matches
+  ));
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const updateTheme = () => setIsDark(media.matches);
+
+    updateTheme();
+    media.addEventListener("change", updateTheme);
+
+    return () => media.removeEventListener("change", updateTheme);
+  }, []);
+
+  return isDark;
+};
+
 export default function HeroScene() {
+  const isDark = usePrefersDark();
+
   return (
-    <div className="absolute inset-0 z-0 bg-[#050816]" style={{ height: '100%', width: '100%' }}>
+    <div className="hero-scene absolute inset-0 z-0" style={{ height: '100%', width: '100%' }}>
       <Canvas
         shadows
         dpr={[1, 2]}
@@ -152,7 +174,8 @@ export default function HeroScene() {
         camera={{ position: [0, 0, 8], fov: 50 }}
         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
       >
-        <ambientLight intensity={0.5} />
+        <color attach="background" args={[isDark ? "#050816" : "#f8fafc"]} />
+        <ambientLight intensity={isDark ? 0.5 : 0.82} />
         <pointLight position={[10, 10, 10]} intensity={1} color="#7342E2" />
         <pointLight position={[-10, -10, -10]} intensity={0.5} color="#00F2FE" />
         <spotLight
@@ -163,36 +186,39 @@ export default function HeroScene() {
           castShadow
         />
 
+        <PresentationControls
+          global
+          snap
+          speed={2}
+          damping={0.1}
+          rotation={[0, 0.3, 0]}
+          polar={[-Math.PI / 4, Math.PI / 4]}
+          azimuth={[-Math.PI / 4, Math.PI / 4]}
+        >
+          <InteractiveCore />
+        </PresentationControls>
+
+        <FloatingObjects />
+
+        <ContactShadows
+          position={[0, -4, 0]}
+          opacity={0.4}
+          scale={20}
+          blur={2}
+          far={4.5}
+        />
+
         <Suspense fallback={null}>
-          <PresentationControls
-            global
-            snap
-            speed={2}
-            damping={0.1}
-            rotation={[0, 0.3, 0]}
-            polar={[-Math.PI / 4, Math.PI / 4]}
-            azimuth={[-Math.PI / 4, Math.PI / 4]}
-          >
-            <InteractiveCore />
-          </PresentationControls>
+          <CodingParticles isDark={isDark} />
+        </Suspense>
 
-          <FloatingObjects />
-          <CodingParticles />
-
-          <ContactShadows
-            position={[0, -4, 0]}
-            opacity={0.4}
-            scale={20}
-            blur={2}
-            far={4.5}
-          />
-
+        <Suspense fallback={null}>
           <Environment preset="city" />
         </Suspense>
       </Canvas>
 
       {/* Gradient overlay for better text readability */}
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#050816] via-[#050816]/60 to-transparent" />
+      <div className="hero-scene-overlay absolute inset-0 pointer-events-none" />
     </div>
   );
 }

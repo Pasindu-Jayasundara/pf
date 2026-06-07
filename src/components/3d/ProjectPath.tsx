@@ -7,7 +7,12 @@ import { Text, Float, Line, Box, Html } from "@react-three/drei";
 import * as THREE from "three";
 import { PROJECTS } from "@/constants";
 
-export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
+type ProjectPathProps = {
+  scrollProgress: number;
+  isDark: boolean;
+};
+
+export const ProjectPath = ({ scrollProgress, isDark }: ProjectPathProps) => {
   const droneRef = useRef<THREE.Group>(null);
 
   // Define a cleaner, gentler path
@@ -79,30 +84,30 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
       {/* The Road */}
       <mesh geometry={roadGeometry}>
         <meshStandardMaterial
-            color="#2563eb"
-            emissive="#1d4ed8"
-            emissiveIntensity={0.5}
-            metalness={0.8}
-            roughness={0.2}
+            color={isDark ? "#2563eb" : "#60a5fa"}
+            emissive={isDark ? "#1d4ed8" : "#bfdbfe"}
+            emissiveIntensity={isDark ? 0.5 : 0.18}
+            metalness={isDark ? 0.8 : 0.35}
+            roughness={isDark ? 0.2 : 0.38}
             wireframe={false}
             transparent
-            opacity={0.9}
+            opacity={isDark ? 0.9 : 0.72}
         />
       </mesh>
 
       {/* Glowing Edges of the Road */}
       <Line
         points={curve.getPoints(100)}
-        color="#7342E2"
+        color={isDark ? "#7342E2" : "#2563eb"}
         lineWidth={5}
         transparent
-        opacity={0.8}
+        opacity={isDark ? 0.8 : 0.55}
       />
 
       {/* Atmospheric lighting following the drone */}
       <pointLight
         position={curve.getPointAt(currentProgress)}
-        intensity={30}
+        intensity={isDark ? 30 : 12}
         distance={30}
         color="#00F2FE"
       />
@@ -138,22 +143,23 @@ export const ProjectPath = ({ scrollProgress }: { scrollProgress: number }) => {
           <group key={project.title}>
             <Line
               points={[roadAnchor, panelAnchor]}
-              color={easedFocus > 0.6 ? "#00F2FE" : "#334155"}
+              color={easedFocus > 0.6 ? "#00F2FE" : isDark ? "#334155" : "#94a3b8"}
               lineWidth={2}
               transparent
-              opacity={easedFocus * 0.6}
+              opacity={easedFocus * (isDark ? 0.6 : 0.5)}
             />
             <ProjectPanel
               position={panelPos}
               project={project}
               focus={focus}
+              isDark={isDark}
             />
           </group>
         );
       })}
 
       {/* The Journey Continues - Final Milestone */}
-      <FinalMilestone position={curve.getPointAt(1).add(new Vector3(0, 3, 0))} />
+      <FinalMilestone position={curve.getPointAt(1).add(new Vector3(0, 3, 0))} isDark={isDark} />
     </group>
   );
 };
@@ -220,7 +226,7 @@ const HumanModel = ({ scrollProgress }: { scrollProgress: number }) => {
   );
 };
 
-const FinalMilestone = ({ position }: { position: Vector3 }) => {
+const FinalMilestone = ({ position, isDark }: { position: Vector3; isDark: boolean }) => {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((state) => {
@@ -237,7 +243,7 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
         <Float speed={4} rotationIntensity={0.1} floatIntensity={0.3}>
             <Text
                 fontSize={0.6}
-                color="#FFFFFF"
+                color={isDark ? "#FFFFFF" : "#0f172a"}
                 anchorX="center"
                 anchorY="middle"
                 maxWidth={20}
@@ -246,14 +252,14 @@ const FinalMilestone = ({ position }: { position: Vector3 }) => {
             >
                 THE JOURNEY CONTINUES...
                 <meshStandardMaterial
-                  color="#FFFFFF"
-                  emissive="#00F2FE"
-                  emissiveIntensity={12}
+                  color={isDark ? "#FFFFFF" : "#0f172a"}
+                  emissive={isDark ? "#00F2FE" : "#7342E2"}
+                  emissiveIntensity={isDark ? 12 : 1.8}
                   toneMapped={false}
                 />
             </Text>
         </Float>
-        <pointLight intensity={150} distance={40} color="#00F2FE" />
+        <pointLight intensity={isDark ? 150 : 45} distance={40} color="#00F2FE" />
     </group>
   );
 };
@@ -262,9 +268,10 @@ type ProjectPanelProps = {
   position: Vector3;
   project: (typeof PROJECTS)[number];
   focus: number;
+  isDark: boolean;
 };
 
-const ProjectPanel = ({ position, project, focus }: ProjectPanelProps) => {
+const ProjectPanel = ({ position, project, focus, isDark }: ProjectPanelProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
   const easedFocus = THREE.MathUtils.smoothstep(focus, 0, 1);
@@ -284,22 +291,22 @@ const ProjectPanel = ({ position, project, focus }: ProjectPanelProps) => {
       <Float speed={2} rotationIntensity={0} floatIntensity={0.5}>
         <Box args={[7, 4.5, 0.1]}>
           <meshStandardMaterial
-            color="#0A0C16"
+            color={isDark ? "#0A0C16" : "#ffffff"}
             transparent
-            opacity={easedFocus}
-            metalness={0.9}
-            roughness={0.1}
+            opacity={easedFocus * (isDark ? 1 : 0.72)}
+            metalness={isDark ? 0.9 : 0.2}
+            roughness={isDark ? 0.1 : 0.52}
           />
         </Box>
 
         <mesh position={[0, 0, 0.06]}>
             <planeGeometry args={[6.8, 4.3]} />
             <meshStandardMaterial
-                color={easedFocus > 0.6 ? "#7342E2" : "#3b82f6"}
+                color={easedFocus > 0.6 ? "#7342E2" : isDark ? "#3b82f6" : "#bfdbfe"}
                 transparent
-                opacity={easedFocus * 0.5}
-                emissive={easedFocus > 0.6 ? "#7342E2" : "#3b82f6"}
-                emissiveIntensity={0.4 + easedFocus * 1.6}
+                opacity={easedFocus * (isDark ? 0.5 : 0.28)}
+                emissive={easedFocus > 0.6 ? "#7342E2" : isDark ? "#3b82f6" : "#bfdbfe"}
+                emissiveIntensity={isDark ? 0.4 + easedFocus * 1.6 : 0.08 + easedFocus * 0.32}
             />
         </mesh>
 
@@ -310,21 +317,21 @@ const ProjectPanel = ({ position, project, focus }: ProjectPanelProps) => {
           className="pointer-events-none select-none"
         >
           <div
-            className="w-[800px] p-10 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/20"
+            className="project-panel w-[800px] p-10 rounded-2xl backdrop-blur-xl border"
             style={{
               opacity: easedFocus,
               transform: `scale(${0.92 + easedFocus * 0.08})`,
               transition: "opacity 180ms ease, transform 180ms ease",
             }}
           >
-            <h3 className="text-6xl font-bold text-white mb-6 leading-tight">{project.title}</h3>
+            <h3 className="project-panel-title text-6xl font-bold mb-6 leading-tight">{project.title}</h3>
             <p className="text-blue-400 font-mono text-2xl mb-4">{project.duration}</p>
-            <p className="text-white/90 text-2xl leading-relaxed mb-10">
+            <p className="project-panel-text text-2xl leading-relaxed mb-10">
               {project.description}
             </p>
             <div className="flex flex-wrap gap-4">
               {project.tags.slice(0, 4).map((tag: string) => (
-                <span key={tag} className="px-6 py-3 bg-white/10 border border-white/20 rounded-full text-xl text-white/80">
+                <span key={tag} className="project-tag px-6 py-3 border rounded-full text-xl">
                   {tag}
                 </span>
               ))}

@@ -7,12 +7,12 @@ import { Calendar, Users, MapPin } from "lucide-react";
 
 const Sessions = () => {
   return (
-    <section id="sessions" className="py-24 px-6 bg-slate-950">
+    <section id="sessions" className="theme-section py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
             <div>
                 <h2 className="text-4xl md:text-5xl font-bold text-glow mb-4">Technical Sessions</h2>
-                <p className="text-slate-400 max-w-xl text-lg">
+                <p className="theme-muted max-w-xl text-lg">
                     Sharing knowledge and empowering the next generation of developers through workshops and seminars.
                 </p>
             </div>
@@ -29,23 +29,23 @@ const Sessions = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="glass-morphism p-8 rounded-3xl hover:border-blue-500 transition-all group"
+              className="glass-morphism theme-card-hover p-8 rounded-3xl hover:border-blue-500 transition-all group"
             >
               <div className="mb-6 flex justify-between items-start">
                 <div className="p-4 bg-blue-600/10 rounded-2xl group-hover:bg-blue-600 transition-colors">
                   <Users size={24} className="text-blue-400 group-hover:text-white" />
                 </div>
-                <span className="text-slate-500 text-sm font-mono">{session.date}</span>
+                <span className="theme-subtle text-sm font-mono">{session.date}</span>
               </div>
 
               <h3 className="text-2xl font-bold mb-3 group-hover:text-blue-400 transition-colors leading-tight">
                 {session.title}
               </h3>
-              <p className="text-slate-400 mb-8 line-clamp-3 leading-relaxed">
+              <p className="theme-muted mb-8 line-clamp-3 leading-relaxed">
                 {session.desc}
               </p>
 
-              <div className="flex items-center gap-4 text-sm text-slate-500 font-medium">
+              <div className="theme-subtle flex items-center gap-4 text-sm font-medium">
                 <div className="flex items-center gap-2">
                   <Calendar size={16} />
                   <span>{session.date}</span>

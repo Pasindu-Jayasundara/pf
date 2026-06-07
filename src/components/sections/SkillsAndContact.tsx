@@ -39,7 +39,7 @@ const SkillsAndContact = () => {
   };
 
   return (
-    <section id="skills" className="py-24 px-6 bg-slate-900/30">
+    <section id="skills" className="theme-section-alt py-24 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
 
         <div>
@@ -57,7 +57,7 @@ const SkillsAndContact = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.05 }}
-                  className="px-5 py-3 bg-slate-800/50 rounded-2xl text-sm border border-slate-700/50 hover:border-blue-500 hover:bg-slate-800 transition-all cursor-default text-slate-300"
+                  className="theme-chip px-5 py-3 rounded-2xl text-sm border transition-all cursor-default"
                 >
                   {skill}
                 </motion.span>
@@ -72,9 +72,9 @@ const SkillsAndContact = () => {
             </h3>
             <div className="space-y-4">
               {VOLUNTEERING.map((item, i) => (
-                <div key={i} className="glass-morphism p-6 rounded-2xl border border-slate-800/50 hover:bg-slate-800/40 transition-colors">
-                  <h4 className="font-bold text-slate-100 text-lg mb-1">{item.title}</h4>
-                  <p className="text-sm text-slate-400">{item.desc}</p>
+                <div key={i} className="glass-morphism theme-card-hover p-6 rounded-2xl transition-colors">
+                  <h4 className="theme-strong font-bold text-lg mb-1">{item.title}</h4>
+                  <p className="theme-muted text-sm">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -83,42 +83,42 @@ const SkillsAndContact = () => {
 
         <div id="contact">
           <h2 className="text-4xl md:text-5xl font-bold mb-12 text-glow">Get In Touch</h2>
-          <div className="glass-morphism p-8 md:p-12 rounded-[2.5rem] border border-slate-800/50 shadow-2xl relative overflow-hidden">
+          <div className="glass-morphism p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden">
 
             <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Name</label>
+                        <label className="theme-subtle text-xs font-bold uppercase tracking-widest ml-1">Name</label>
                         <input
                             name="name"
                             required
                             placeholder="John Doe"
                             suppressHydrationWarning
-                            className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-blue-500 transition-colors text-white"
+                            className="theme-input w-full border rounded-2xl px-6 py-4 focus:outline-none focus:border-blue-500 transition-colors"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Email</label>
+                        <label className="theme-subtle text-xs font-bold uppercase tracking-widest ml-1">Email</label>
                         <input
                             type="email"
                             name="email"
                             required
                             placeholder="john@example.com"
                             suppressHydrationWarning
-                            className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-blue-500 transition-colors text-white"
+                            className="theme-input w-full border rounded-2xl px-6 py-4 focus:outline-none focus:border-blue-500 transition-colors"
                         />
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Message</label>
+                    <label className="theme-subtle text-xs font-bold uppercase tracking-widest ml-1">Message</label>
                     <textarea
                         name="message"
                         required
                         placeholder="Tell me about your project..."
                         rows={5}
                         suppressHydrationWarning
-                        className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-blue-500 transition-colors text-white resize-none"
+                        className="theme-input w-full border rounded-2xl px-6 py-4 focus:outline-none focus:border-blue-500 transition-colors resize-none"
                     />
                 </div>
 
@@ -126,7 +126,7 @@ const SkillsAndContact = () => {
                     type="submit"
                     disabled={formStatus === "submitting"}
                     suppressHydrationWarning
-                    className="w-full py-5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-800 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-900/20 active:scale-[0.98]"
+                    className="w-full py-5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:disabled:text-white text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-900/20 active:scale-[0.98]"
                 >
                     {formStatus === "submitting" ? "SENDING..." : (
                         <>SEND MESSAGE <Send size={20} /></>
@@ -150,24 +150,24 @@ const SkillsAndContact = () => {
                 </AnimatePresence>
             </form>
 
-            <div className="mt-12 pt-12 border-t border-slate-800/50 grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div className="theme-border mt-12 pt-12 border-t grid grid-cols-1 sm:grid-cols-3 gap-8">
                 <a href={PERSONAL_INFO.linkedin} target="_blank" className="flex flex-col items-center gap-2 group">
-                    <div className="p-3 bg-slate-800 rounded-xl group-hover:bg-blue-600 transition-colors">
-                        <LinkIcon size={20} className="text-blue-400 group-hover:text-white" />
+                    <div className="theme-icon-tile p-3 rounded-xl transition-colors">
+                        <LinkIcon size={20} />
                     </div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">LinkedIn</span>
+                    <span className="theme-subtle text-[10px] font-bold uppercase tracking-widest">LinkedIn</span>
                 </a>
                 <a href={PERSONAL_INFO.github} target="_blank" className="flex flex-col items-center gap-2 group">
-                    <div className="p-3 bg-slate-800 rounded-xl group-hover:bg-blue-600 transition-colors">
-                        <MessageSquare size={20} className="text-blue-400 group-hover:text-white" />
+                    <div className="theme-icon-tile p-3 rounded-xl transition-colors">
+                        <MessageSquare size={20} />
                     </div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">GitHub</span>
+                    <span className="theme-subtle text-[10px] font-bold uppercase tracking-widest">GitHub</span>
                 </a>
                 <a href={`mailto:${PERSONAL_INFO.email}`} className="flex flex-col items-center gap-2 group">
-                    <div className="p-3 bg-slate-800 rounded-xl group-hover:bg-blue-600 transition-colors">
-                        <Mail size={20} className="text-blue-400 group-hover:text-white" />
+                    <div className="theme-icon-tile p-3 rounded-xl transition-colors">
+                        <Mail size={20} />
                     </div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email</span>
+                    <span className="theme-subtle text-[10px] font-bold uppercase tracking-widest">Email</span>
                 </a>
             </div>
           </div>

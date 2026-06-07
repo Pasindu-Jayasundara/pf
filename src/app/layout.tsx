@@ -1,15 +1,23 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: '--font-body',
+  variable: "--font-body",
 });
 
 export const metadata: Metadata = {
   title: "Pasindu Jayasundara | Portfolio",
   description: "Full-Stack Software Engineer & Microsoft Student Ambassador Portfolio",
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#020617" },
+  ],
 };
 
 export default function RootLayout({
@@ -24,8 +32,8 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} antialiased font-body`} suppressHydrationWarning>
         <main>{children}</main>
-        <footer className="py-12 border-t border-slate-800 text-center text-slate-400 text-sm bg-[#0A0C16]">
-          <p>© {new Date().getFullYear()} Pasindu Jayasundara. All rights reserved.</p>
+        <footer className="theme-footer py-12 border-t text-center text-sm">
+          <p>&copy; {new Date().getFullYear()} Pasindu Jayasundara. All rights reserved.</p>
         </footer>
       </body>
     </html>

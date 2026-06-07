@@ -97,7 +97,7 @@ const Experience = () => {
   }, []);
 
   return (
-    <section id="experience" ref={sectionRef} className="py-16 px-5 sm:px-6 md:py-24 bg-slate-900/50">
+    <section id="experience" ref={sectionRef} className="theme-section-alt py-16 px-5 sm:px-6 md:py-24">
       <div className="max-w-5xl mx-auto">
         <h2 className="text-3xl sm:text-4xl font-bold mb-12 md:mb-16 text-center text-glow">
           Professional Journey
@@ -105,7 +105,7 @@ const Experience = () => {
 
         <div ref={timelineRef} className="relative pl-16 md:pl-0">
           {/* Vertical Line */}
-          <div className="absolute left-6 md:left-1/2 top-0 h-full w-1 -translate-x-1/2 rounded-full bg-slate-800" />
+          <div className="theme-line absolute left-6 md:left-1/2 top-0 h-full w-1 -translate-x-1/2 rounded-full" />
           <div
             ref={lineRef}
             className="absolute left-6 md:left-1/2 top-0 h-full w-1 -translate-x-1/2 rounded-full bg-blue-500 origin-top"
@@ -135,16 +135,16 @@ const Experience = () => {
                       <h3 className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight text-blue-400">
                         {item.title}
                       </h3>
-                      <p className="mt-1 text-base sm:text-lg md:text-xl text-slate-100 font-semibold">
+                      <p className="theme-strong mt-1 text-base sm:text-lg md:text-xl font-semibold">
                         {item.organization}
                       </p>
                       {item.duration && (
-                        <p className="mt-1 text-sm sm:text-base text-slate-400">
+                        <p className="theme-muted mt-1 text-sm sm:text-base">
                           {item.duration}
                         </p>
                       )}
                       {item.description.length > 0 && (
-                        <ul className={`mt-4 text-sm sm:text-base text-slate-400 space-y-2 ${
+                        <ul className={`theme-muted mt-4 text-sm sm:text-base space-y-2 ${
                           isLeft ? "md:ml-auto" : ""
                         }`}>
                           {item.description.map((desc) => (
@@ -162,7 +162,7 @@ const Experience = () => {
                       className={`absolute -left-16 top-0 z-10 flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-300 md:static md:col-start-2 md:row-start-1 md:h-14 md:w-14 ${
                         isActive
                           ? "border-blue-300 bg-blue-600 text-white shadow-[0_0_22px_rgba(37,99,235,0.65)]"
-                          : "border-slate-600 bg-slate-700 text-slate-300"
+                          : "theme-marker"
                       }`}
                     >
                       <Icon size={24} strokeWidth={2} />

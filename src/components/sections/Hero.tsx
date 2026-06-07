@@ -16,7 +16,7 @@ import dynamic from "next/dynamic";
 
 const HeroScene = dynamic(() => import("../3d/HeroScene"), { ssr: false });
 
-const Logo = ({ fill = "#FFFFFF" }: { fill?: string }) => (
+const Logo = ({ fill = "currentColor" }: { fill?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" overflow="visible" viewBox="0 0 256 256">
     <path d="M 64 128 L 64.5 128 L 32 95 L 0 64 L 0 0 L 64 0 L 128 64 L 128 64.5 L 161 32 L 192 0 L 256 0 L 256 64 L 192 128 L 128 128 L 128 192 L 96 223 L 63.5 256 L 0 256 L 0 192 Z M 256 192 L 224 223 L 191.5 256 L 128 256 L 128 192 L 192 128 L 256 128 Z" fill={fill}/>
   </svg>
@@ -41,7 +41,7 @@ const Hero = () => {
   };
 
   return (
-    <section id="home" className="relative w-full min-h-screen font-body text-white overflow-hidden">
+    <section id="home" className="hero-shell relative w-full min-h-screen font-body overflow-hidden">
       {/* 3D Background */}
       <HeroScene />
 
@@ -49,7 +49,7 @@ const Hero = () => {
       <nav className="relative z-20 max-w-7xl mx-auto px-5 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
             <Logo />
-            <span className="font-heading text-xl tracking-tight text-white">PASINDU.J</span>
+            <span className="hero-strong font-heading text-xl tracking-tight">PASINDU.J</span>
         </div>
 
         <div className="hidden md:flex items-center gap-8">
@@ -75,14 +75,14 @@ const Hero = () => {
           </a>
           <Link
             href="#contact"
-            className="bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-full px-5 py-2.5 text-sm font-medium hover:bg-white/20 transition-all"
+            className="hero-panel backdrop-blur-md border rounded-full px-5 py-2.5 text-sm font-medium transition-all"
           >
             Contact
           </Link>
         </div>
 
         <button
-          className="md:hidden p-2 text-white"
+          className="hero-strong md:hidden p-2"
           onClick={() => setIsMenuOpen(true)}
           aria-label="Toggle menu"
         >
@@ -99,23 +99,23 @@ const Hero = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 z-40 bg-[#192837]/35 backdrop-blur-[4px]"
+              className="hero-menu-backdrop fixed inset-0 z-40 backdrop-blur-[4px]"
             />
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.45 }}
-              className="fixed right-0 top-0 z-50 w-[min(88vw,360px)] h-[100dvh] bg-[#0A0C16] shadow-[-12px_0_48px_rgba(0,0,0,0.5)] p-6 flex flex-col border-l border-white/10"
+              className="hero-menu fixed right-0 top-0 z-50 w-[min(88vw,360px)] h-[100dvh] p-6 flex flex-col border-l"
             >
               <div className="flex items-center justify-between mb-8">
-                <Logo fill="#FFFFFF" />
-                <button onClick={() => setIsMenuOpen(false)} className="text-white">
+                <Logo />
+                <button onClick={() => setIsMenuOpen(false)} className="hero-strong">
                   <X size={28} />
                 </button>
               </div>
 
-              <div className="h-px bg-white/10 mb-8" />
+              <div className="hero-divider h-px mb-8" />
 
               <div className="flex flex-col gap-6">
                 {NAV_LINKS.map((link, i) => (
@@ -128,7 +128,7 @@ const Hero = () => {
                     <Link
                       href={link.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="text-2xl font-heading text-white hover:text-[#7342E2] transition-colors"
+                      className="hero-strong text-2xl font-heading hover:text-[#7342E2] transition-colors"
                     >
                       {link.name}
                     </Link>
@@ -148,7 +148,7 @@ const Hero = () => {
                 <Link
                   href="#contact"
                   onClick={() => setIsMenuOpen(false)}
-                  className="w-full bg-white/10 text-white rounded-full py-4 font-bold text-center border border-white/20"
+                  className="hero-panel w-full rounded-full py-4 font-bold text-center border"
                 >
                     Contact
                 </Link>
@@ -165,7 +165,7 @@ const Hero = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-xs font-medium tracking-wider text-[#00F2FE] mb-6 uppercase"
+            className="hero-badge inline-flex items-center gap-2 px-3 py-1 rounded-full border backdrop-blur-sm text-xs font-medium tracking-wider mb-6 uppercase"
           >
             <div className="w-2 h-2 rounded-full bg-[#00F2FE] animate-pulse" />
             Available for new opportunities
@@ -178,9 +178,9 @@ const Hero = () => {
             variants={fadeUp}
             className="font-heading text-[clamp(2.5rem,8vw,4.5rem)] leading-[0.95] tracking-[-0.03em] mb-8"
           >
-            <span className="block text-white">Full-Stack</span>
+            <span className="hero-strong block">Full-Stack</span>
             <span className="flex items-center gap-4 text-[#7342E2]">
-              Architect <Code size={40} className="text-white/20" />
+              Architect <Code size={40} className="hero-faint" />
             </span>
             <span className="block opacity-90">& Developer.</span>
           </motion.h1>
@@ -190,9 +190,9 @@ const Hero = () => {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="text-[clamp(1rem,2.5vw,1.25rem)] leading-[1.6] text-white/70 mb-12 border-l-2 border-[#7342E2] pl-6 py-2 max-w-xl"
+            className="hero-muted text-[clamp(1rem,2.5vw,1.25rem)] leading-[1.6] mb-12 border-l-2 border-[#7342E2] pl-6 py-2 max-w-xl"
           >
-            Hi, I&apos;m <span className="font-bold text-white">Pasindu Jayasundara</span>. I craft scalable digital ecosystems and immersive 3D interfaces. Bridging the gap between robust backend architecture and fluid frontend experiences.
+            Hi, I&apos;m <span className="hero-strong font-bold">Pasindu Jayasundara</span>. I craft scalable digital ecosystems and immersive 3D interfaces. Bridging the gap between robust backend architecture and fluid frontend experiences.
           </motion.p>
 
           <motion.div
@@ -221,7 +221,7 @@ const Hero = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3 rounded-full bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                  className="hero-social p-3 rounded-full border transition-all"
                 >
                   <social.icon size={20} />
                 </a>

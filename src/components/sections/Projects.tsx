@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useLayoutEffect, useRef, useState, Suspense } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ProjectPath } from "@/components/3d/ProjectPath";
 import gsap from "gsap";
@@ -8,11 +8,34 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const usePrefersDark = () => {
+  const [isDark, setIsDark] = useState(() => (
+    typeof window === "undefined"
+      ? false
+      : window.matchMedia("(prefers-color-scheme: dark)").matches
+  ));
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const updateTheme = () => setIsDark(media.matches);
+
+    updateTheme();
+    media.addEventListener("change", updateTheme);
+
+    return () => media.removeEventListener("change", updateTheme);
+  }, []);
+
+  return isDark;
+};
+
 const Projects = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const introTitleRef = useRef<HTMLDivElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const isDark = usePrefersDark();
+
+  const sceneBackground = isDark ? "#050816" : "#f8fafc";
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -91,7 +114,7 @@ const Projects = () => {
   }, []);
 
   return (
-    <section id="projects" ref={containerRef} className="relative min-h-[700vh] bg-[#050816]">
+    <section id="projects" ref={containerRef} className="project-shell relative min-h-[700vh]">
       <div className="sticky top-0 h-screen w-full z-10 overflow-hidden">
 
         {/* 3D Scene Container */}
@@ -101,11 +124,12 @@ const Projects = () => {
             resize={{ scroll: false }}
             style={{ width: '100%', height: '100%' }}
           >
-            <fog attach="fog" args={["#050816", 5, 40]} />
-            <ambientLight intensity={0.5} />
-            <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
+            <color attach="background" args={[sceneBackground]} />
+            <fog attach="fog" args={[sceneBackground, isDark ? 5 : 8, isDark ? 40 : 55]} />
+            <ambientLight intensity={isDark ? 0.5 : 0.9} />
+            <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={isDark ? 1 : 0.55} />
             <Suspense fallback={null}>
-              <ProjectPath scrollProgress={scrollProgress} />
+              <ProjectPath scrollProgress={scrollProgress} isDark={isDark} />
             </Suspense>
           </Canvas>
         </div>
@@ -115,7 +139,7 @@ const Projects = () => {
           ref={introTitleRef}
           className="absolute z-20 pointer-events-none flex flex-col items-start justify-center"
         >
-          <h2 className="text-6xl md:text-8xl font-bold text-white drop-shadow-[0_0_30px_rgba(37,99,235,0.6)] uppercase tracking-tighter whitespace-nowrap">
+          <h2 className="project-title text-6xl md:text-8xl font-bold uppercase tracking-tighter whitespace-nowrap">
             The Project Journey
           </h2>
           <p className="text-blue-400 font-mono tracking-[0.2em] uppercase text-lg mt-2 opacity-60 intro-subtitle">
