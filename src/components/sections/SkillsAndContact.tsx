@@ -152,20 +152,20 @@ const SkillsAndContact = () => {
                 </AnimatePresence>
             </form>
 
-            <div className="theme-border mt-12 pt-12 border-t grid grid-cols-1 sm:grid-cols-3 gap-8">
-                <a href={PERSONAL_INFO.linkedin} target="_blank" className="flex flex-col items-center gap-2 group">
+            <div className="theme-border mt-12 pt-12 border-t grid grid-cols-3 gap-3 sm:gap-8">
+                <a href={PERSONAL_INFO.linkedin} target="_blank" className="flex min-w-0 flex-col items-center gap-2 text-center group">
                     <div className="theme-icon-tile p-3 rounded-xl transition-colors">
                         <LinkIcon size={20} />
                     </div>
                     <span className="theme-subtle text-[10px] font-bold uppercase tracking-widest">LinkedIn</span>
                 </a>
-                <a href={PERSONAL_INFO.github} target="_blank" className="flex flex-col items-center gap-2 group">
+                <a href={PERSONAL_INFO.github} target="_blank" className="flex min-w-0 flex-col items-center gap-2 text-center group">
                     <div className="theme-icon-tile p-3 rounded-xl transition-colors">
                         <MessageSquare size={20} />
                     </div>
                     <span className="theme-subtle text-[10px] font-bold uppercase tracking-widest">GitHub</span>
                 </a>
-                <a href={`mailto:${PERSONAL_INFO.email}`} className="flex flex-col items-center gap-2 group">
+                <a href={`mailto:${PERSONAL_INFO.email}`} className="flex min-w-0 flex-col items-center gap-2 text-center group">
                     <div className="theme-icon-tile p-3 rounded-xl transition-colors">
                         <Mail size={20} />
                     </div>

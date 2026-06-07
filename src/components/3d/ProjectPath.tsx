@@ -10,9 +10,10 @@ import { PROJECTS } from "@/constants";
 type ProjectPathProps = {
   scrollProgress: number;
   isDark: boolean;
+  isMobile: boolean;
 };
 
-export const ProjectPath = ({ scrollProgress, isDark }: ProjectPathProps) => {
+export const ProjectPath = ({ scrollProgress, isDark, isMobile }: ProjectPathProps) => {
   const droneRef = useRef<THREE.Group>(null);
   const particleGroupRef = useRef<THREE.Group>(null);
 
@@ -70,11 +71,11 @@ export const ProjectPath = ({ scrollProgress, isDark }: ProjectPathProps) => {
     // We want the camera to always be above and behind the human in world space
     // to avoid clipping through the tube as it curves.
     // Adjusted Y and Z offset for better framing.
-    let cameraOffset = new Vector3(0, 8, 15);
+    let cameraOffset = isMobile ? new Vector3(0, 10, 22) : new Vector3(0, 8, 15);
 
     // Zoom out and focus at the end to see the final milestone
     if (progress > 0.95) {
-        cameraOffset = new Vector3(0, 6, 12);
+        cameraOffset = isMobile ? new Vector3(0, 8, 18) : new Vector3(0, 6, 12);
     }
 
     const targetCameraPos = pos.clone().add(cameraOffset);
@@ -177,11 +178,11 @@ export const ProjectPath = ({ scrollProgress, isDark }: ProjectPathProps) => {
         const sideOffset = new Vector3()
           .crossVectors(tangent, worldUp)
           .normalize()
-          .multiplyScalar(side * 8);
+          .multiplyScalar(side * (isMobile ? 4.2 : 8));
         const panelPos = position
           .clone()
           .add(sideOffset)
-          .add(new Vector3(0, 2.8, 0));
+          .add(new Vector3(0, isMobile ? 2.1 : 2.8, 0));
         const roadAnchor = position.clone().add(new Vector3(0, 1.2, 0));
         const panelAnchor = panelPos.clone().add(new Vector3(0, -1.4, 0));
         const distanceFromProject = Math.abs(currentProgress - t);
@@ -202,6 +203,7 @@ export const ProjectPath = ({ scrollProgress, isDark }: ProjectPathProps) => {
               project={project}
               focus={focus}
               isDark={isDark}
+              isMobile={isMobile}
             />
           </group>
         );
@@ -318,9 +320,10 @@ type ProjectPanelProps = {
   project: (typeof PROJECTS)[number];
   focus: number;
   isDark: boolean;
+  isMobile: boolean;
 };
 
-const ProjectPanel = ({ position, project, focus, isDark }: ProjectPanelProps) => {
+const ProjectPanel = ({ position, project, focus, isDark, isMobile }: ProjectPanelProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
   const easedFocus = THREE.MathUtils.smoothstep(focus, 0, 1);
@@ -335,10 +338,10 @@ const ProjectPanel = ({ position, project, focus, isDark }: ProjectPanelProps) =
   });
 
   return (
-    <group ref={groupRef} position={position} scale={0.78 + easedFocus * 0.28}>
+    <group ref={groupRef} position={position} scale={isMobile ? 0.42 + easedFocus * 0.16 : 0.78 + easedFocus * 0.28}>
       {/* Floating 3D Panel */}
       <Float speed={2} rotationIntensity={0} floatIntensity={0.5}>
-        <Box args={[7, 4.5, 0.1]}>
+        <Box args={isMobile ? [2.6, 1.5, 0.1] : [7, 4.5, 0.1]}>
           <meshStandardMaterial
             color={isDark ? "#0A0C16" : "#ffffff"}
             transparent
@@ -349,7 +352,7 @@ const ProjectPanel = ({ position, project, focus, isDark }: ProjectPanelProps) =
         </Box>
 
         <mesh position={[0, 0, 0.06]}>
-            <planeGeometry args={[6.8, 4.3]} />
+            <planeGeometry args={isMobile ? [2.4, 1.3] : [6.8, 4.3]} />
             <meshStandardMaterial
                 color={easedFocus > 0.6 ? "#7342E2" : isDark ? "#3b82f6" : "#bfdbfe"}
                 transparent
@@ -359,34 +362,36 @@ const ProjectPanel = ({ position, project, focus, isDark }: ProjectPanelProps) =
             />
         </mesh>
 
-        <Html
-          transform
-          distanceFactor={6} // Adjusted for better visibility
-          position={[0, 0, 0.2]}
-          className="pointer-events-none select-none"
-        >
-          <div
-            className="project-panel w-[800px] p-10 rounded-2xl backdrop-blur-xl border"
-            style={{
-              opacity: easedFocus,
-              transform: `scale(${0.92 + easedFocus * 0.08})`,
-              transition: "opacity 180ms ease, transform 180ms ease",
-            }}
+        {!isMobile && (
+          <Html
+            transform
+            distanceFactor={6} // Adjusted for better visibility
+            position={[0, 0, 0.2]}
+            className="pointer-events-none select-none"
           >
-            <h3 className="project-panel-title text-6xl font-bold mb-6 leading-tight">{project.title}</h3>
-            <p className="text-blue-400 font-mono text-2xl mb-4">{project.duration}</p>
-            <p className="project-panel-text text-2xl leading-relaxed mb-10">
-              {project.description}
-            </p>
-            <div className="flex flex-wrap gap-4">
-              {project.tags.slice(0, 4).map((tag: string) => (
-                <span key={tag} className="project-tag px-6 py-3 border rounded-full text-xl">
-                  {tag}
-                </span>
-              ))}
+            <div
+              className="project-panel w-[800px] p-10 rounded-2xl backdrop-blur-xl border"
+              style={{
+                opacity: easedFocus,
+                transform: `scale(${0.92 + easedFocus * 0.08})`,
+                transition: "opacity 180ms ease, transform 180ms ease",
+              }}
+            >
+              <h3 className="project-panel-title text-6xl font-bold mb-6 leading-tight">{project.title}</h3>
+              <p className="text-blue-400 font-mono text-2xl mb-4">{project.duration}</p>
+              <p className="project-panel-text text-2xl leading-relaxed mb-10">
+                {project.description}
+              </p>
+              <div className="flex flex-wrap gap-4">
+                {project.tags.slice(0, 4).map((tag: string) => (
+                  <span key={tag} className="project-tag px-6 py-3 border rounded-full text-xl">
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
-        </Html>
+          </Html>
+        )}
       </Float>
     </group>
   );
